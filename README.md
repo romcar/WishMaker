@@ -92,7 +92,7 @@ npm run build
 npm run dev
 ```
 
-The backend API will run on `http://localhost:5000`
+The backend API will run on `http://localhost:8000`
 
 ### 4. Setup Frontend
 
@@ -114,7 +114,7 @@ The frontend will run on `http://localhost:3000`
 ### Backend (.env)
 
 ```env
-PORT=5000
+PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=wishmaker
@@ -130,14 +130,14 @@ REACT_APP_API_URL=http://localhost:5000/api
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/wishes` | Get all wishes |
-| GET | `/api/wishes/:id` | Get a specific wish |
-| POST | `/api/wishes` | Create a new wish |
-| PUT | `/api/wishes/:id` | Update a wish |
-| DELETE | `/api/wishes/:id` | Delete a wish |
-| GET | `/health` | Health check endpoint |
+| Method | Endpoint          | Description           |
+| ------ | ----------------- | --------------------- |
+| GET    | `/api/wishes`     | Get all wishes        |
+| GET    | `/api/wishes/:id` | Get a specific wish   |
+| POST   | `/api/wishes`     | Create a new wish     |
+| PUT    | `/api/wishes/:id` | Update a wish         |
+| DELETE | `/api/wishes/:id` | Delete a wish         |
+| GET    | `/health`         | Health check endpoint |
 
 ## Database Schema
 
@@ -206,7 +206,7 @@ The application can be tested by:
 
 ### Backend Issues
 
-- Check if port 5000 is available
+- Check if port 8000 is available
 - Verify environment variables are set correctly
 - Check backend logs for errors
 

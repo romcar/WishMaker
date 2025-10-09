@@ -1,0 +1,23 @@
+{
+  "name": "wishmaker",
+  "version": "1.0.0",
+  "description": "A full-stack wish making application built with React, TypeScript, Node.js, Express, and PostgreSQL.",
+  "scripts": {
+    "docker:up": "docker-compose up -d --build",
+    "docker:down": "docker-compose down",
+    "docker:backend": "docker-compose up -d --build backend",
+    "docker:frontend": "docker-compose up -d --build frontend",
+    "docker:db": "docker-compose up -d db",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/romcar/WishMaker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/romcar/WishMaker/issues"
+  },
+  "homepage": "https://github.com/romcar/WishMaker#readme"
+}
