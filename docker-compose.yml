@@ -39,6 +39,7 @@ services:
         volumes:
             - postgres_data:/var/lib/postgresql/data
             - ./backend/src/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+            - ./backend/src/db/auth_migration.sql:/docker-entrypoint-initdb.d/auth_migration.sql
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U postgres"]
             interval: 10s
