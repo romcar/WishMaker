@@ -2,7 +2,10 @@
 // Handles all authentication-related HTTP endpoints
 
 import bcrypt from "bcrypt";
+<<<<<<< HEAD
 import crypto from "crypto";
+=======
+>>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import {
@@ -20,6 +23,7 @@ import {
     WebAuthnRegistrationRequest,
     WebAuthnVerificationRequest,
 } from "../types/auth.types";
+<<<<<<< HEAD
 import { validateHighEntropySecret } from "../utils/entropy";
 
 export class AuthController {
@@ -66,6 +70,12 @@ export class AuthController {
         }
         AuthController.JWT_SECRET = secret;
     }
+=======
+
+export class AuthController {
+    private static readonly JWT_SECRET =
+        process.env.JWT_SECRET || "your-secret-key";
+>>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
     private static readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
     private static readonly MAX_LOGIN_ATTEMPTS = 5;
 
@@ -364,21 +374,35 @@ export class AuthController {
         res: Response
     ): Promise<void> {
         try {
+<<<<<<< HEAD
             const { userId, credential, deviceName, challenge } = req.body;
 
             if (!userId || !credential || !challenge) {
                 res.status(400).json({
                     success: false,
                     message: "User ID, credential, or challenge are required",
+=======
+            const { userId, credential, deviceName } = req.body;
+
+            if (!userId || !credential) {
+                res.status(400).json({
+                    success: false,
+                    message: "User ID and credential are required",
+>>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
                 });
                 return;
             }
 
             // Verify registration
             const result = await WebAuthnService.verifyRegistrationResponse(
+<<<<<<< HEAD
                 userId,
                 credential,
                 challenge,
+=======
+                credential,
+                userId,
+>>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
                 deviceName
             );
 
@@ -522,8 +546,12 @@ export class AuthController {
         userId: number,
         req: Request
     ): Promise<any> {
+<<<<<<< HEAD
         // Use cryptographically secure random UUID for session ID
         const sessionId = `session_${crypto.randomUUID()}`;
+=======
+        const sessionId = `session_${Date.now()}_${Math.random()}`;
+>>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
         const payload = {
             userId,
             sessionId,
@@ -531,10 +559,14 @@ export class AuthController {
         };
 
         const sessionToken = jwt.sign(payload, AuthController.JWT_SECRET);
+<<<<<<< HEAD
         // Use cryptographically secure random bytes for refresh token
         const refreshToken = `refresh_${crypto
             .randomBytes(32)
             .toString("hex")}`;
+=======
+        const refreshToken = `refresh_${Date.now()}_${Math.random()}`;
+>>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
 
         // Store session in database
         await AuthSessionModel.create({

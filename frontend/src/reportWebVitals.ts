@@ -1,6 +1,6 @@
 import { Metric, ReportHandler } from "web-vitals";
-import { getWebVitalsRating } from "./utils/webVitalsRating";
 import { isLocalHost } from "./utils/isLocalHost";
+import { getWebVitalsRating } from "./utils/webVitalsRating";
 
 // Enhanced Web Vitals reporting with detailed console logging and analytics
 // Only active in development environments
@@ -33,11 +33,15 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
 
         console.group(`${color} Web Vitals Report - ${name}`);
         console.log(
-            `Value: ${Math.round(value * 1000) / 1000}${name === "CLS" ? "" : "ms"}`
+            `Value: ${Math.round(value * 1000) / 1000}${
+                name === "CLS" ? "" : "ms"
+            }`
         );
         console.log(`Rating: ${rating}`);
         console.log(
-            `Delta: ${Math.round(delta * 1000) / 1000}${name === "CLS" ? "" : "ms"}`
+            `Delta: ${Math.round(delta * 1000) / 1000}${
+                name === "CLS" ? "" : "ms"
+            }`
         );
         console.log(`Timestamp: ${new Date().toISOString()}`);
 
@@ -87,7 +91,7 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
     // Load and measure all Core Web Vitals
     if (typeof window !== "undefined") {
         import("web-vitals").then(
-    ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+            ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
                 console.log("🚀 Starting Web Vitals measurement...");
 
                 getCLS(defaultHandler);

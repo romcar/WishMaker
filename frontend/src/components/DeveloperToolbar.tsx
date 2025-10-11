@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Metric } from "web-vitals";
+import { isLocalHost } from "../utils/isLocalHost";
 import {
     getWebVitalsRating,
     type WebVitalsRating,
 } from "../utils/webVitalsRating";
-import { isLocalHost } from "../utils/isLocalHost";
 import "./DeveloperToolbar.css";
 
 interface WebVitalsMetric {
