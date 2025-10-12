@@ -1,6 +1,18 @@
 // WebAuthn Service for handling biometric authentication
 // Provides core WebAuthn functionality for registration and authentication
 
+// TODO: ENHANCEMENT - Improve WebAuthn service functionality
+// 1. Add support for multiple authenticator types (roaming, platform)
+// 2. Implement authenticator attestation verification
+// 3. Add support for conditional UI and passkey management
+// 4. Implement backup and recovery for WebAuthn credentials
+// 5. Add support for cross-device authentication flows
+// 6. Implement credential management and device naming
+// 7. Add WebAuthn analytics and usage tracking
+// 8. Support for WebAuthn Level 3 features
+// 9. Add enterprise features (attestation policies, etc.)
+// 10. Implement WebAuthn credential migration tools
+
 // Set up crypto polyfill for WebAuthn
 import { Crypto } from "@peculiar/webcrypto";
 if (!global.crypto) {

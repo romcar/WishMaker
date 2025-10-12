@@ -243,7 +243,8 @@ export interface WebAuthnVerificationResponse {
 
 // Request/Response Types for Controllers
 export interface RegisterRequest {
-    username: string;
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
     confirmPassword: string;

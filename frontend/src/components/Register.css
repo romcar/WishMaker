@@ -1,0 +1,330 @@
+/* Register Component Styles */
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px;
+    padding: 20px;
+}
+
+.register-card {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.register-form h1 {
+    text-align: center;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 28px;
+}
+
+.register-subtitle {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #666;
+    font-size: 16px;
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.form-group.half {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-group input.error {
+    border-color: #dc3545;
+}
+
+.field-error {
+    display: block;
+    margin-top: 4px;
+    color: #dc3545;
+    font-size: 14px;
+}
+
+.password-requirements {
+    margin-top: 4px;
+}
+
+.password-requirements small {
+    color: #666;
+    font-size: 12px;
+}
+
+.register-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 16px;
+}
+
+.register-button.primary {
+    background-color: #28a745;
+    color: white;
+}
+
+.register-button.primary:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.register-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.webauthn-preview {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.webauthn-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.webauthn-description {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.register-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: inherit;
+}
+
+.link-button:hover:not(:disabled) {
+    color: #0056b3;
+}
+
+/* WebAuthn Setup Styles */
+.webauthn-setup {
+    text-align: center;
+    padding: 20px;
+}
+
+.webauthn-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.webauthn-setup h2 {
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.webauthn-setup > p {
+    color: #666;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.webauthn-benefits {
+    text-align: left;
+    margin: 24px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
+}
+
+.webauthn-benefits h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.webauthn-benefits ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.webauthn-benefits li {
+    margin-bottom: 8px;
+    color: #555;
+    font-size: 14px;
+}
+
+.webauthn-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.webauthn-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.webauthn-button.primary {
+    background-color: #28a745;
+    color: white;
+}
+
+.webauthn-button.primary:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.webauthn-button.secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.webauthn-button.secondary:hover:not(:disabled) {
+    background-color: #545b62;
+}
+
+.webauthn-help {
+    background: #e9ecef;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #6c757d;
+}
+
+.webauthn-help p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Registration Complete Styles */
+.registration-complete {
+    text-align: center;
+    padding: 20px;
+}
+
+.success-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.registration-complete h2 {
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.registration-complete > p {
+    color: #666;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.next-steps {
+    text-align: left;
+    margin: 24px 0;
+    padding: 20px;
+    background: #d4edda;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
+}
+
+.next-steps h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #155724;
+}
+
+.next-steps ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.next-steps li {
+    margin-bottom: 8px;
+    color: #155724;
+    font-size: 14px;
+}
+
+.complete-button {
+    padding: 12px 32px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.complete-button.primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.complete-button.primary:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}

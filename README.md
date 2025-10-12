@@ -11,6 +11,26 @@ A full-stack wish making application built with React, TypeScript, Node.js, Expr
 - 🔒 Type-safe with TypeScript across frontend and backend
 - 🐳 Docker support for easy database setup
 
+<!-- TODO: CRITICAL - Infrastructure and deployment improvements needed
+🎫 Linear Tickets:
+- https://linear.app/romcar/issue/ROM-5/critical-fix-authentication-security-vulnerabilities
+- https://linear.app/romcar/issue/ROM-6/critical-fix-database-schema-security-issues
+- https://linear.app/romcar/issue/ROM-7/critical-implement-input-validation-and-sql-injection-protection
+- https://linear.app/romcar/issue/ROM-10/implement-comprehensive-testing-infrastructure
+- https://linear.app/romcar/issue/ROM-11/production-infrastructure-and-devops-setup
+
+1. Security: Missing authentication/authorization, no HTTPS, vulnerable to SQL injection
+2. Performance: No caching, no CDN, no optimization for production
+3. Monitoring: No logging, error tracking, health checks, or metrics
+4. Testing: No unit tests, integration tests, or E2E tests
+5. CI/CD: No automated testing, deployment pipeline, or environment management
+6. Documentation: Missing API documentation, development guidelines, deployment docs
+7. Scalability: No load balancing, database optimization, or horizontal scaling
+8. Backup: No database backups, disaster recovery, or data retention policies
+9. Compliance: No GDPR compliance, audit trails, or data protection measures
+10. DevOps: Missing staging environment, rollback procedures, zero-downtime deployments
+-->
+
 ## Tech Stack
 
 ### Frontend
