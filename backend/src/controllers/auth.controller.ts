@@ -2,10 +2,7 @@
 // Handles all authentication-related HTTP endpoints
 
 import bcrypt from "bcrypt";
-<<<<<<< HEAD
 import crypto from "crypto";
-=======
->>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import {
@@ -23,7 +20,6 @@ import {
     WebAuthnRegistrationRequest,
     WebAuthnVerificationRequest,
 } from "../types/auth.types";
-<<<<<<< HEAD
 import { validateHighEntropySecret } from "../utils/entropy";
 
 export class AuthController {
@@ -73,9 +69,19 @@ export class AuthController {
 =======
 
 export class AuthController {
+    // TODO: SECURITY CRITICAL - JWT secret must be from environment in production
+    // Remove fallback "your-secret-key" - application should fail if not set
+    // Use crypto.randomBytes(64).toString('hex') to generate secure secret
     private static readonly JWT_SECRET =
         process.env.JWT_SECRET || "your-secret-key";
+<<<<<<< HEAD
 >>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
+=======
+
+    // TODO: ENHANCEMENT - Make security parameters configurable
+    // Move to environment variables or configuration service
+    // Consider different limits for different user types
+>>>>>>> b62056a (feat: Implement comprehensive authentication system with Linear integration)
     private static readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
     private static readonly MAX_LOGIN_ATTEMPTS = 5;
 
@@ -85,17 +91,19 @@ export class AuthController {
     static async register(req: Request, res: Response): Promise<void> {
         try {
             const {
-                username,
+                firstName,
+                lastName,
                 email,
                 password,
                 confirmPassword,
             }: RegisterRequest = req.body;
 
             // Validate input
-            if (!username || !email || !password) {
+            if (!firstName || !lastName || !email || !password) {
                 res.status(400).json({
                     success: false,
-                    message: "Username, email, and password are required",
+                    message:
+                        "First name, last name, email, and password are required",
                 });
                 return;
             }
@@ -126,13 +134,26 @@ export class AuthController {
                 return;
             }
 
-            const existingUsername = await UserModel.findByUsername(username);
-            if (existingUsername) {
-                res.status(409).json({
-                    success: false,
-                    message: "Username already taken",
-                });
-                return;
+            // TODO: IMPROVEMENT - Enhanced username generation algorithm
+            // Consider more sophisticated username generation:
+            // 1. Handle unicode characters properly (use slugify library)
+            // 2. Add minimum username length validation (e.g., 3 characters)
+            // 3. Reserve list of inappropriate/system usernames
+            // 4. Consider using UUID suffix instead of incremental counter
+            const baseUsername =
+                `${firstName.toLowerCase()}${lastName.toLowerCase()}`.replace(
+                    /[^a-z0-9]/g,
+                    ""
+                );
+            let username = baseUsername;
+            let counter = 1;
+
+            // TODO: PERFORMANCE - Optimize username uniqueness check
+            // Current implementation has N+1 query problem for popular names
+            // Consider batch checking or using database constraints
+            while (await UserModel.findByUsername(username)) {
+                username = `${baseUsername}${counter}`;
+                counter++;
             }
 
             // Hash password
@@ -143,7 +164,7 @@ export class AuthController {
                 username,
                 email,
                 password_hash: passwordHash,
-                display_name: username,
+                display_name: `${firstName} ${lastName}`,
                 two_factor_enabled: false,
                 account_locked_until: undefined,
                 failed_login_attempts: 0,
@@ -158,7 +179,7 @@ export class AuthController {
                 event_type: "user_registered",
                 ip_address: req.ip,
                 user_agent: req.get("User-Agent"),
-                metadata: { username, email },
+                metadata: { firstName, lastName, username, email },
             });
 
             res.status(201).json({
@@ -166,6 +187,8 @@ export class AuthController {
                 message: "User registered successfully",
                 user: {
                     id: user.id,
+                    firstName,
+                    lastName,
                     username: user.username,
                     email: user.email,
                     display_name: user.display_name,
@@ -264,6 +287,9 @@ export class AuthController {
                 });
             }
 
+            // Update last login timestamp
+            await UserModel.updateLastLogin(user.id);
+
             // Check if 2FA is required
             const webauthnCredentials =
                 await WebAuthnCredentialModel.findByUserId(user.id);
@@ -286,22 +312,51 @@ export class AuthController {
                 return;
             }
 
+            // Log successful login security event
+            await SecurityEventModel.create({
+                user_id: user.id,
+                event_type: "login_success",
+                ip_address: req.ip,
+                user_agent: req.get("User-Agent"),
+                metadata: { email },
+            });
+
             // Create session (no 2FA required)
             const sessionData = await AuthController.createSession(
                 user.id,
                 req
             );
 
+            // TODO: MISMATCH - Fragile firstName/lastName extraction
+            // This approach assumes display_name is always "First Last" format
+            // Problems: 1) Users with single names, 2) Multiple middle names, 3) Cultural naming differences
+            // SOLUTION: Store firstName/lastName as separate database columns
+            // OR: Add proper name parsing library (e.g., humanparser)
+            const displayNameParts = (user.display_name || user.username).split(
+                " "
+            );
+            const firstName = displayNameParts[0] || user.username;
+            const lastName =
+                displayNameParts.length > 1
+                    ? displayNameParts.slice(1).join(" ")
+                    : "";
+
             res.json({
                 success: true,
                 message: "Login successful",
                 user: {
                     id: user.id,
-                    username: user.username,
                     email: user.email,
-                    display_name: user.display_name,
+                    firstName,
+                    lastName,
+                    two_factor_enabled: user.two_factor_enabled,
+                    email_verified: user.email_verified,
+                    created_at: user.created_at.toISOString(),
+                    last_login_at: user.last_login_at?.toISOString(),
                 },
-                session: sessionData,
+                session_token: sessionData.token,
+                refresh_token: sessionData.refresh_token,
+                expires_in: sessionData.expires_in,
             });
         } catch (error) {
             console.error("Login error:", error);
@@ -374,35 +429,21 @@ export class AuthController {
         res: Response
     ): Promise<void> {
         try {
-<<<<<<< HEAD
             const { userId, credential, deviceName, challenge } = req.body;
 
             if (!userId || !credential || !challenge) {
                 res.status(400).json({
                     success: false,
                     message: "User ID, credential, or challenge are required",
-=======
-            const { userId, credential, deviceName } = req.body;
-
-            if (!userId || !credential) {
-                res.status(400).json({
-                    success: false,
-                    message: "User ID and credential are required",
->>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
                 });
                 return;
             }
 
             // Verify registration
             const result = await WebAuthnService.verifyRegistrationResponse(
-<<<<<<< HEAD
                 userId,
                 credential,
                 challenge,
-=======
-                credential,
-                userId,
->>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
                 deviceName
             );
 
@@ -546,12 +587,8 @@ export class AuthController {
         userId: number,
         req: Request
     ): Promise<any> {
-<<<<<<< HEAD
         // Use cryptographically secure random UUID for session ID
         const sessionId = `session_${crypto.randomUUID()}`;
-=======
-        const sessionId = `session_${Date.now()}_${Math.random()}`;
->>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
         const payload = {
             userId,
             sessionId,
@@ -559,14 +596,10 @@ export class AuthController {
         };
 
         const sessionToken = jwt.sign(payload, AuthController.JWT_SECRET);
-<<<<<<< HEAD
         // Use cryptographically secure random bytes for refresh token
         const refreshToken = `refresh_${crypto
             .randomBytes(32)
             .toString("hex")}`;
-=======
-        const refreshToken = `refresh_${Date.now()}_${Math.random()}`;
->>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
 
         // Store session in database
         await AuthSessionModel.create({

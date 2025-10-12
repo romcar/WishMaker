@@ -1,9 +1,29 @@
-# version: "3.8"
+# TODO: IMPROVEMENT - Enhance Docker Compose configuration
+# 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-11/production-infrastructure-and-devops-setup
+# 1. Add environment-specific compose files (dev, prod, test)
+# 2. Implement proper secret management with Docker secrets
+# 3. Add health checks for all services
+# 4. Configure resource limits and reservations
+# 5. Add logging configuration and log rotation
+# 6. Implement service scaling and load balancing
+# 7. Add monitoring services (Prometheus, Grafana)
+# 8. Configure SSL/TLS with Let's Encrypt
+# 9. Add backup and restore services
+# 10. Implement CI/CD pipeline integration
+
+version: "3.8"
 
 services:
     backend:
         build: ./backend
         container_name: wishmaker-backend
+        # TODO: CRITICAL - Improve environment configuration
+        # 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-11/production-infrastructure-and-devops-setup
+        # 1. Use Docker secrets for sensitive data (passwords, keys)
+        # 2. Add environment-specific variables
+        # 3. Implement proper JWT secret management
+        # 4. Add SSL/TLS configuration variables
+        # 5. Configure external service URLs (Redis, email, etc.)
         environment:
             DATABASE_URL: postgres://postgres:postgres@postgres:5432/wishmaker
             DB_HOST: postgres
