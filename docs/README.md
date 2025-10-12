@@ -46,7 +46,7 @@ Welcome to the comprehensive documentation for the WishMaker application. This d
 All documentation improvements and development tasks are tracked through Linear tickets:
 
 - **[ROM-5](https://linear.app/romcar/issue/ROM-5/)** - Security vulnerabilities and authentication
-- **[ROM-6](https://linear.app/romcar/issue/ROM-6/)** - Authentication features and user management  
+- **[ROM-6](https://linear.app/romcar/issue/ROM-6/)** - Authentication features and user management
 - **[ROM-7](https://linear.app/romcar/issue/ROM-7/)** - Frontend enhancements and user experience
 - **[ROM-8](https://linear.app/romcar/issue/ROM-8/)** - Database optimization and performance
 - **[ROM-9](https://linear.app/romcar/issue/ROM-9/)** - API improvements and developer experience
@@ -92,6 +92,6 @@ When adding new documentation:
 
 ---
 
-**Last Updated**: October 12, 2025  
-**Version**: 1.0.0  
+**Last Updated**: October 12, 2025
+**Version**: 1.0.0
 **Maintained By**: WishMaker Development Team

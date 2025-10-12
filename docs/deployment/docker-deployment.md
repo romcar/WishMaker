@@ -7,7 +7,7 @@ This guide provides comprehensive instructions for deploying the WishMaker appli
 The WishMaker application uses Docker Compose to orchestrate a multi-container setup including:
 
 - **Frontend**: React application served via Node.js
-- **Backend**: Node.js/Express API server  
+- **Backend**: Node.js/Express API server
 - **Database**: PostgreSQL 16 with initialization scripts
 - **Network**: Internal Docker network for service communication
 
@@ -140,7 +140,7 @@ EXPOSE 8000
 CMD ["npm", "start"]
 ```
 
-### Frontend Dockerfile  
+### Frontend Dockerfile
 ```dockerfile
 FROM node:18-alpine
 
@@ -268,7 +268,7 @@ docker-compose ps
 
 # View service logs
 docker-compose logs backend
-docker-compose logs frontend  
+docker-compose logs frontend
 docker-compose logs postgres
 
 # Follow logs in real-time
@@ -409,7 +409,7 @@ prometheus:
   image: prom/prometheus
   ports:
     - "9090:9090"
-    
+
 grafana:
   image: grafana/grafana
   ports:
@@ -472,6 +472,6 @@ docker-compose exec postgres vacuumdb -U wishmaker_user wishmaker
 
 ---
 
-**Last Updated**: October 12, 2025  
-**Deployment Status**: ✅ Working in Development  
+**Last Updated**: October 12, 2025
+**Deployment Status**: ✅ Working in Development
 **Production Ready**: 🔄 In Progress (ROM-11)

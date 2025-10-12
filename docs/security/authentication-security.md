@@ -75,5 +75,5 @@ The WishMaker authentication system implements multiple layers of security to pr
 
 ---
 
-**Status**: 🔄 In Progress  
+**Status**: 🔄 In Progress
 **Implementation**: Core security features implemented, monitoring and advanced features planned

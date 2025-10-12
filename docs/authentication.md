@@ -149,7 +149,7 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const login = async (email: string, password: string) => { ... };
   const logout = () => { ... };
   const register = async (userData: RegisterData) => { ... };
-  
+
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, login, logout, register }}>
       {children}
@@ -263,17 +263,17 @@ const Login: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input 
-        type="email" 
-        value={email} 
+      <input
+        type="email"
+        value={email}
         onChange={(e) => setEmail(e.target.value)}
-        required 
+        required
       />
-      <input 
-        type="password" 
-        value={password} 
+      <input
+        type="password"
+        value={password}
         onChange={(e) => setPassword(e.target.value)}
-        required 
+        required
       />
       <button type="submit">Login</button>
     </form>
@@ -324,7 +324,7 @@ if (DEBUG_AUTH) {
 
 ### High Priority
 - [ ] Implement password reset functionality
-- [ ] Add email verification for new registrations  
+- [ ] Add email verification for new registrations
 - [ ] Enhance MFA with backup codes
 - [ ] Implement session management dashboard
 
@@ -334,7 +334,7 @@ if (DEBUG_AUTH) {
 - [ ] Add audit logging for authentication events
 - [ ] Create admin user management interface
 
-### Low Priority  
+### Low Priority
 - [ ] Add biometric authentication options
 - [ ] Implement single sign-on (SSO)
 - [ ] Add device management for users
@@ -342,6 +342,6 @@ if (DEBUG_AUTH) {
 
 ---
 
-**Last Updated**: October 12, 2025  
-**Related PRs**: #7 - Comprehensive Authentication System  
+**Last Updated**: October 12, 2025
+**Related PRs**: #7 - Comprehensive Authentication System
 **Status**: ✅ Implemented and Deployed

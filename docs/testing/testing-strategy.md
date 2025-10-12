@@ -13,7 +13,7 @@ The WishMaker testing strategy ensures code quality, reliability, and user satis
 - **Backend**: Controller, service, and model testing with Jest
 - **Coverage Target**: 80%+ line coverage
 
-### Integration Tests (Middle Layer)  
+### Integration Tests (Middle Layer)
 - **API Testing**: Endpoint integration with database
 - **Authentication Flow**: Complete auth system testing
 - **Database Operations**: CRUD operations validation
@@ -51,7 +51,7 @@ describe('WishForm Component', () => {
 
 ### Backend Testing
 ```typescript
-// Controller test example  
+// Controller test example
 describe('Auth Controller', () => {
   test('should authenticate user with valid credentials', async () => {
     // Test implementation
@@ -67,6 +67,6 @@ describe('Auth Controller', () => {
 
 ---
 
-**Status**: 📋 Planned  
-**Priority**: High (ROM-10)  
+**Status**: 📋 Planned
+**Priority**: High (ROM-10)
 **Implementation**: Testing infrastructure setup required

@@ -10,7 +10,7 @@ Performance monitoring ensures the WishMaker application delivers optimal user e
 
 ### Core Web Vitals Metrics
 - **LCP (Largest Contentful Paint)**: Loading performance measurement
-- **FID (First Input Delay)**: Interactivity responsiveness  
+- **FID (First Input Delay)**: Interactivity responsiveness
 - **CLS (Cumulative Layout Shift)**: Visual stability tracking
 
 ### Implementation
@@ -36,7 +36,7 @@ npm start
 - API response times
 - Client-side error tracking
 
-### Backend Performance  
+### Backend Performance
 - API endpoint response times
 - Database query performance
 - Memory usage monitoring
@@ -64,5 +64,5 @@ npm start
 
 ---
 
-**Status**: 🔄 In Progress  
+**Status**: 🔄 In Progress
 **Implementation**: Web Vitals integrated, monitoring infrastructure planned
