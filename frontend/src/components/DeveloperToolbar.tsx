@@ -41,13 +41,7 @@ const DeveloperToolbar: React.FC = () => {
         window.location.hostname.includes("172.16.");
 
     const isDevelopment =
-        process.env.NODE_ENV === "development" ||
-        (isLocalEnvironment &&
-            (window.location.hostname === "localhost" ||
-                window.location.hostname === "127.0.0.1" ||
-                window.location.hostname.includes("192.168.") ||
-                window.location.hostname.includes("10.0.") ||
-                window.location.hostname.includes("172.16.")));
+        process.env.NODE_ENV === "development" || isLocalEnvironment;
 
     useEffect(() => {
         if (!isDevelopment) return;
