@@ -332,9 +332,12 @@ export class AuthController {
             }
 
             // Verify registration
+            // Retrieve the expected challenge from the session or request context
+            const expectedChallenge = req.session?.webauthnChallenge;
             const result = await WebAuthnService.verifyRegistrationResponse(
-                credential,
                 userId,
+                credential,
+                expectedChallenge,
                 deviceName
             );
 
