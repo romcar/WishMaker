@@ -8,7 +8,9 @@
     "docker:backend": "docker-compose up -d --build backend",
     "docker:frontend": "docker-compose up -d --build frontend",
     "docker:db": "docker-compose up -d db",
-    "docker:logs": "docker-compose logs -f"
+    "docker:logs": "docker-compose logs -f",
+    "figma:mcp": "./scripts/start-figma-mcp.sh",
+    "figma:setup": "echo 'Setting up Figma integration...' && echo 'Please follow the setup guide in docs/design/figma-setup-guide.md'"
   },
   "repository": {
     "type": "git",

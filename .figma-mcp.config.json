@@ -1,0 +1,16 @@
+{
+  "figma": {
+    "apiKey": "YOUR_FIGMA_API_KEY_HERE",
+    "teamId": "YOUR_FIGMA_TEAM_ID_HERE",
+    "projectId": "YOUR_FIGMA_PROJECT_ID_HERE"
+  },
+  "server": {
+    "port": 3001,
+    "debug": true,
+    "stdio": true
+  },
+  "project": {
+    "name": "WishMaker",
+    "description": "Figma integration for WishMaker application design system and UX prototyping"
+  }
+}
