@@ -20,6 +20,14 @@ Welcome to the comprehensive documentation for the WishMaker application. This d
 - [Codacy Instructions](./development/codacy-instructions.md) - Code quality and analysis guidelines
 - [Docker Development](./development/docker-development.md) - Docker-based development workflow
 
+### 🔷 TypeScript Types
+- [Types Documentation](./types/README.md) - Comprehensive TypeScript type reference
+  - [🔐 Authentication Types](./types/authentication-types.md) - User auth, sessions, WebAuthn, MFA
+  - [🎯 Wish Types](./types/wish-types.md) - Wish management, categories, priorities, filtering
+  - [🔑 WebAuthn Types](./types/webauthn-types.md) - Passwordless authentication, security keys
+  - [🎨 Component Types](./types/component-types.md) - React component props, state, event handlers
+  - [🌐 API Types](./types/api-types.md) - HTTP requests, responses, API clients
+
 ### 🚀 Deployment
 - [Docker Deployment](./deployment/docker-deployment.md) - Production deployment with Docker Compose
 - [Environment Configuration](./deployment/environment-config.md) - Environment variables and configuration
