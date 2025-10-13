@@ -37,9 +37,13 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
                 : "🔴";
 
         console.group(`${color} Web Vitals Report - ${name}`);
-        console.log(`Value: ${Math.round(value * 1000) / 1000}ms`);
+        console.log(
+            `Value: ${Math.round(value * 1000) / 1000}${name === "CLS" ? "" : "ms"}`
+        );
         console.log(`Rating: ${rating}`);
-        console.log(`Delta: ${Math.round(delta * 1000) / 1000}ms`);
+        console.log(
+            `Delta: ${Math.round(delta * 1000) / 1000}${name === "CLS" ? "" : "ms"}`
+        );
         console.log(`Timestamp: ${new Date().toISOString()}`);
 
         // Metric-specific guidance
