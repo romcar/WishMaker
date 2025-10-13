@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Metric } from "web-vitals";
+import {
+    getWebVitalsRating,
+    type WebVitalsRating,
+} from "../utils/webVitalsRating";
 import "./DeveloperToolbar.css";
 
 interface WebVitalsMetric {
     name: string;
     value: number;
-    rating: "good" | "needs-improvement" | "poor";
+    rating: WebVitalsRating;
     timestamp: string;
 }
 
@@ -62,50 +66,10 @@ const DeveloperToolbar: React.FC = () => {
         if (!isDevelopment) return;
 
         const handleWebVitals = (metric: Metric) => {
-            const getRating = (
-                name: string,
-                value: number
-            ): "good" | "needs-improvement" | "poor" => {
-                switch (name) {
-                    case "CLS":
-                        return value < 0.1
-                            ? "good"
-                            : value < 0.25
-                            ? "needs-improvement"
-                            : "poor";
-                    case "FID":
-                        return value < 100
-                            ? "good"
-                            : value < 300
-                            ? "needs-improvement"
-                            : "poor";
-                    case "FCP":
-                        return value < 1800
-                            ? "good"
-                            : value < 3000
-                            ? "needs-improvement"
-                            : "poor";
-                    case "LCP":
-                        return value < 2500
-                            ? "good"
-                            : value < 4000
-                            ? "needs-improvement"
-                            : "poor";
-                    case "TTFB":
-                        return value < 800
-                            ? "good"
-                            : value < 1800
-                            ? "needs-improvement"
-                            : "poor";
-                    default:
-                        return "needs-improvement";
-                }
-            };
-
             const newMetric: WebVitalsMetric = {
                 name: metric.name,
                 value: Math.round(metric.value * 1000) / 1000,
-                rating: getRating(metric.name, metric.value),
+                rating: getWebVitalsRating(metric.name, metric.value),
                 timestamp: new Date().toLocaleTimeString(),
             };
 

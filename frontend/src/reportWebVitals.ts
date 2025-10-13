@@ -1,4 +1,5 @@
 import { Metric, ReportHandler } from "web-vitals";
+import { getWebVitalsRating } from "./utils/webVitalsRating";
 
 // Enhanced Web Vitals reporting with detailed console logging and analytics
 // Only active in development environments
@@ -24,48 +25,8 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
     const defaultHandler = (metric: Metric) => {
         const { name, value, delta } = metric;
 
-        // Determine rating based on metric thresholds (web-vitals v2 compatibility)
-        const getRating = (
-            name: string,
-            value: number
-        ): "good" | "needs-improvement" | "poor" => {
-            switch (name) {
-                case "CLS":
-                    return value < 0.1
-                        ? "good"
-                        : value < 0.25
-                        ? "needs-improvement"
-                        : "poor";
-                case "FID":
-                    return value < 100
-                        ? "good"
-                        : value < 300
-                        ? "needs-improvement"
-                        : "poor";
-                case "FCP":
-                    return value < 1800
-                        ? "good"
-                        : value < 3000
-                        ? "needs-improvement"
-                        : "poor";
-                case "LCP":
-                    return value < 2500
-                        ? "good"
-                        : value < 4000
-                        ? "needs-improvement"
-                        : "poor";
-                case "TTFB":
-                    return value < 800
-                        ? "good"
-                        : value < 1800
-                        ? "needs-improvement"
-                        : "poor";
-                default:
-                    return "needs-improvement";
-            }
-        };
-
-        const rating = getRating(name, value);
+        // Determine rating using shared utility for consistent thresholds
+        const rating = getWebVitalsRating(name, value);
 
         // Color coding based on rating
         const color =
