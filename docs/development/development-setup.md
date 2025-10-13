@@ -74,7 +74,7 @@ npm start
 ### Project Structure
 ```
 WishMaker/
-├── docs/                    # Documentation
+├── docs/                   # Documentation
 ├── frontend/               # React application
 │   ├── src/
 │   │   ├── components/     # React components
