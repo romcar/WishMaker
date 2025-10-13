@@ -3,7 +3,7 @@
 
 // WebAuthn related types
 export type AuthenticatorTransport =
-    | "ble"
+    | "ble" // Bluetooth Low Energy
     | "hybrid"
     | "internal"
     | "nfc"
