@@ -54,8 +54,6 @@ export class WebAuthnService {
                 );
             }
 
-            // Skip existing credentials for now (can be added later for better UX)
-
             // Generate registration options
             const options: GenerateRegistrationOptionsOpts = {
                 rpName: WebAuthnService.RP_NAME,
