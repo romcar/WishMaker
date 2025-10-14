@@ -2,6 +2,17 @@
 // This file defines all the types used in the authentication system
 
 // WebAuthn related types
+/**
+ * AuthenticatorTransport
+ *
+ * Describes the transport(s) an authenticator can use to communicate with the client.
+ *
+ * - "ble":   Bluetooth Low Energy — typically used by mobile or external authenticators that connect over BLE.
+ * - "hybrid": Hybrid transport — authenticators that may support multiple transport mechanisms (vendor-specific).
+ * - "internal": Platform/internal authenticator — built-in authenticators (e.g., device biometrics).
+ * - "nfc":   Near Field Communication — used by contactless authenticators (cards, tokens).
+ * - "usb":   USB — external authenticators connected over USB (including USB-C / USB-A keys).
+ */
 export type AuthenticatorTransport =
     | "ble" // Bluetooth Low Energy
     | "hybrid"
