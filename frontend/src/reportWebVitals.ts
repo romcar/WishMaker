@@ -1,25 +1,13 @@
 import { Metric, ReportHandler } from "web-vitals";
 import { getWebVitalsRating } from "./utils/webVitalsRating";
+import { isLocalHost } from "./utils/isLocalHost";
 
 // Enhanced Web Vitals reporting with detailed console logging and analytics
 // Only active in development environments
 const reportWebVitals = (onPerfEntry?: ReportHandler) => {
     // Run in development OR when testing locally (even production builds)
     // Hidden only in actual deployed production environments
-    const isLocalEnvironment =
-        typeof window !== "undefined" &&
-        ((): boolean => {
-            const host = window.location.hostname;
-            // Match exact localhost variants and private IPv4 ranges:
-            // - localhost or IPv6 ::1
-            // - 127.0.0.1
-            // - 10.x.x.x
-            // - 192.168.x.x
-            // - 172.16.0.0 to 172.31.255.255
-            const privateHostRegex =
-                /^(?:localhost|::1|0.0.0.0|127(?:.(?:25[0-5]|2[0-4]\d|1?\d{1,2})){3}|10(?:.(?:25[0-5]|2[0-4]\d|1?\d{1,2})){3}|192.168(?:.(?:25[0-5]|2[0-4]\d|1?\d{1,2})){2}|172.(?:1[6-9]|2\d|3[0-1])(?:.(?:25[0-5]|2[0-4]\d|1?\d{1,2})){2})(?::\d+)?$/;
-            return privateHostRegex.test(host);
-        })();
+    const isLocalEnvironment = isLocalHost();
 
     const isDevelopment =
         process.env.NODE_ENV === "development" || isLocalEnvironment;
@@ -99,7 +87,8 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
     // Load and measure all Core Web Vitals
     if (typeof window !== "undefined") {
         import("web-vitals").then(
-            ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+        import { isLocalHost } from './utils/isLocalHost';
+    ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
                 console.log("🚀 Starting Web Vitals measurement...");
 
                 getCLS(defaultHandler);
