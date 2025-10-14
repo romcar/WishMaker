@@ -113,19 +113,15 @@ describe("getWebVitalsRating", () => {
     });
 
     describe("Unknown metrics", () => {
-        test("should return 'needs-improvement' for unknown metric names", () => {
-            expect(getWebVitalsRating("UNKNOWN", 100)).toBe(
-                "needs-improvement"
-            );
-            expect(getWebVitalsRating("", 500)).toBe("needs-improvement");
-            expect(getWebVitalsRating("INVALID_METRIC", 1000)).toBe(
-                "needs-improvement"
-            );
+        test("should throw an error for unknown metric names", () => {
+            expect(() => getWebVitalsRating("UNKNOWN", 100)).toThrow();
+            expect(() => getWebVitalsRating("", 500)).toThrow();
+            expect(() => getWebVitalsRating("INVALID_METRIC", 1000)).toThrow();
         });
 
-        test("should handle case-sensitive metric names", () => {
-            expect(getWebVitalsRating("cls", 0.05)).toBe("needs-improvement");
-            expect(getWebVitalsRating("lcp", 2000)).toBe("needs-improvement");
+        test("should throw an error for case-sensitive metric names", () => {
+            expect(() => getWebVitalsRating("cls", 0.05)).toThrow();
+            expect(() => getWebVitalsRating("lcp", 2000)).toThrow();
         });
     });
 
