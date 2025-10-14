@@ -325,19 +325,19 @@ export class AuthController {
         res: Response
     ): Promise<void> {
         try {
-            const { userId, credential, deviceName } = req.body;
+            const { userId, credential, deviceName, challenge } = req.body;
 
-            if (!userId || !credential) {
+            if (!userId || !credential || !challenge) {
                 res.status(400).json({
                     success: false,
-                    message: "User ID and credential are required",
+                    message: "User ID, credential, or challenge are required",
                 });
                 return;
             }
 
             // Verify registration
-            // Retrieve the expected challenge from the session or request context
-            const expectedChallenge = req.session?.webauthnChallenge;
+            // Retrieve the expected challenge from the request body
+            const expectedChallenge = challenge;
             const result = await WebAuthnService.verifyRegistrationResponse(
                 userId,
                 credential,
