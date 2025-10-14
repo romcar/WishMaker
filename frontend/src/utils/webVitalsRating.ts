@@ -8,7 +8,7 @@
 export type WebVitalsRating = "good" | "needs-improvement" | "poor";
 
 // Add explicit union type for metric names for compile-time safety
-export type WebVitalName = "CLS" | "FID" | "FCP" | "LCP" | "TTFB";
+export type WebVitalName = "CLS" | "FID" | "FCP" | "LCP" | "TTFB" | "INP";
 
 /**
  * Determines the rating for a Web Vitals metric based on Core Web Vitals thresholds.
@@ -55,4 +55,5 @@ export const WEB_VITALS_THRESHOLDS = {
     FCP: { good: 1800, poor: 3000 },
     LCP: { good: 2500, poor: 4000 },
     TTFB: { good: 800, poor: 1800 },
+    INP: { good: 200, poor: 500 },
 } as const;
