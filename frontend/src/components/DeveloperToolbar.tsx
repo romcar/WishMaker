@@ -247,7 +247,3 @@ const DeveloperToolbar: React.FC = () => {
 };
 
 export default DeveloperToolbar;
-    );
-};
-
-export default DeveloperToolbar;
