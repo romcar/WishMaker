@@ -22,10 +22,24 @@ import {
 
 export class AuthController {
     private static readonly JWT_SECRET = (() => {
-        if (!process.env.JWT_SECRET) {
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
             throw new Error("JWT_SECRET environment variable must be set");
         }
-        return process.env.JWT_SECRET;
+        // Enforce minimum length and complexity
+        if (secret.length < 32) {
+            throw new Error("JWT_SECRET must be at least 32 characters long for adequate security");
+        }
+        // Require at least one uppercase, one lowercase, one digit, and one special character
+        if (
+            !/[A-Z]/.test(secret) ||
+            !/[a-z]/.test(secret) ||
+            !/[0-9]/.test(secret) ||
+            !/[^A-Za-z0-9]/.test(secret)
+        ) {
+            throw new Error("JWT_SECRET must contain uppercase, lowercase, digit, and special character");
+        }
+        return secret;
     })();
     private static readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
     private static readonly MAX_LOGIN_ATTEMPTS = 5;
