@@ -21,8 +21,12 @@ import {
 } from "../types/auth.types";
 
 export class AuthController {
-    private static readonly JWT_SECRET =
-        process.env.JWT_SECRET || "your-secret-key";
+    private static readonly JWT_SECRET = (() => {
+        if (!process.env.JWT_SECRET) {
+            throw new Error("JWT_SECRET environment variable must be set");
+        }
+        return process.env.JWT_SECRET;
+    })();
     private static readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
     private static readonly MAX_LOGIN_ATTEMPTS = 5;
 
