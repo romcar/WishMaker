@@ -27,13 +27,7 @@ export const getWebVitalsRating = (
     name: WebVitalName,
     value: number
 ): WebVitalsRating => {
-    // runtime validation for JS consumers or unexpected values
-    if (!(name in WEB_VITALS_THRESHOLDS)) {
-        throw new TypeError(`Unknown web vital metric: ${name}`);
-    }
-
     const thresholds = WEB_VITALS_THRESHOLDS[name];
-
     if (value < thresholds.good) {
         return "good";
     }
