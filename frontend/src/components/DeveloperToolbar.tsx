@@ -4,6 +4,7 @@ import {
     getWebVitalsRating,
     type WebVitalsRating,
 } from "../utils/webVitalsRating";
+import { isLocalHost } from "../utils/isLocalHost";
 import "./DeveloperToolbar.css";
 
 interface WebVitalsMetric {
@@ -37,12 +38,7 @@ const DeveloperToolbar: React.FC = () => {
 
     // Show in development OR when testing locally (even production builds)
     // Hidden only in actual deployed production environments
-    const isLocalEnvironment =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1" ||
-        window.location.hostname.includes("192.168.") ||
-        window.location.hostname.includes("10.0.") ||
-        window.location.hostname.includes("172.16.");
+    const isLocalEnvironment = isLocalHost();
 
     const isDevelopment =
         process.env.NODE_ENV === "development" || isLocalEnvironment;
@@ -247,6 +243,10 @@ const DeveloperToolbar: React.FC = () => {
                 )}
             </div>
         </div>
+    );
+};
+
+export default DeveloperToolbar;
     );
 };
 
