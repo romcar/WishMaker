@@ -28,6 +28,9 @@ export const getWebVitalsRating = (
     value: number
 ): WebVitalsRating => {
     const thresholds = WEB_VITALS_THRESHOLDS[name];
+    if (!thresholds) {
+        throw new Error(`Unknown Web Vitals metric name: ${name}`);
+    }
     if (value < thresholds.good) {
         return "good";
     }
