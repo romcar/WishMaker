@@ -236,7 +236,7 @@ export class WebAuthnCredentialModel {
             credentialData.user_id,
             credentialData.credential_id,
             credentialData.public_key,
-            credentialData.counter.toString(),
+            credentialData.counter,
             credentialData.device_type,
             credentialData.transports,
             credentialData.backup_eligible,
