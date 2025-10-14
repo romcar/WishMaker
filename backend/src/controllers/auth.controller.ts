@@ -26,19 +26,41 @@ export class AuthController {
         if (!secret) {
             throw new Error("JWT_SECRET environment variable must be set");
         }
-        // Enforce minimum length and complexity
-        if (secret.length < 32) {
-            throw new Error("JWT_SECRET must be at least 32 characters long for adequate security");
+
+        // Compute Shannon entropy (bits) for the provided secret
+        function computeEntropyBits(s: string): number {
+            const freq: Record<string, number> = {};
+            for (const ch of s) {
+                freq[ch] = (freq[ch] || 0) + 1;
+            }
+            const len = s.length;
+            let entropyPerSymbol = 0;
+            for (const k in freq) {
+                const p = freq[k] / len;
+                entropyPerSymbol += -p * Math.log2(p);
+            }
+            return entropyPerSymbol * len; // total bits
         }
-        // Require at least one uppercase, one lowercase, one digit, and one special character
-        if (
-            !/[A-Z]/.test(secret) ||
-            !/[a-z]/.test(secret) ||
-            !/[0-9]/.test(secret) ||
-            !/[^A-Za-z0-9]/.test(secret)
-        ) {
-            throw new Error("JWT_SECRET must contain uppercase, lowercase, digit, and special character");
+
+        // Minimal length to avoid trivial secrets
+        const MIN_LENGTH = 16;
+        const MIN_ENTROPY_BITS = 128;
+
+        if (secret.length < MIN_LENGTH) {
+            throw new Error(
+                `JWT_SECRET must be at least ${MIN_LENGTH} characters long`
+            );
         }
+
+        const entropy = computeEntropyBits(secret);
+        if (entropy < MIN_ENTROPY_BITS) {
+            throw new Error(
+                `JWT_SECRET entropy too low (${Math.round(
+                    entropy
+                )} bits). Provide a high-entropy secret (e.g. a securely generated token).`
+            );
+        }
+
         return secret;
     })();
     private static readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
