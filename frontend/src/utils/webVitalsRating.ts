@@ -7,6 +7,9 @@
 
 export type WebVitalsRating = "good" | "needs-improvement" | "poor";
 
+// Add explicit union type for metric names for compile-time safety
+export type WebVitalName = "CLS" | "FID" | "FCP" | "LCP" | "TTFB";
+
 /**
  * Determines the rating for a Web Vitals metric based on Core Web Vitals thresholds.
  *
@@ -21,15 +24,15 @@ export type WebVitalsRating = "good" | "needs-improvement" | "poor";
  * ```
  */
 export const getWebVitalsRating = (
-    name: string,
+    name: WebVitalName,
     value: number
 ): WebVitalsRating => {
-    const thresholds =
-        WEB_VITALS_THRESHOLDS[name as keyof typeof WEB_VITALS_THRESHOLDS];
-
-    if (!thresholds) {
-        return "needs-improvement";
+    // runtime validation for JS consumers or unexpected values
+    if (!(name in WEB_VITALS_THRESHOLDS)) {
+        throw new TypeError(`Unknown web vital metric: ${name}`);
     }
+
+    const thresholds = WEB_VITALS_THRESHOLDS[name];
 
     if (value < thresholds.good) {
         return "good";

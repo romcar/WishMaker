@@ -8,11 +8,18 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
     // Hidden only in actual deployed production environments
     const isLocalEnvironment =
         typeof window !== "undefined" &&
-        (window.location.hostname === "localhost" ||
-            window.location.hostname === "127.0.0.1" ||
-            window.location.hostname.includes("192.168.") ||
-            window.location.hostname.includes("10.0.") ||
-            window.location.hostname.includes("172.16."));
+        ((): boolean => {
+            const host = window.location.hostname;
+            // Match exact localhost variants and private IPv4 ranges:
+            // - localhost or IPv6 ::1
+            // - 127.0.0.1
+            // - 10.x.x.x
+            // - 192.168.x.x
+            // - 172.16.0.0 to 172.31.255.255
+            const privateHostRegex =
+                /^(?:localhost|::1|0.0.0.0|127(?:.(?:25[0-5]|2[0-4]\d|1?\d{1,2})){3}|10(?:.(?:25[0-5]|2[0-4]\d|1?\d{1,2})){3}|192.168(?:.(?:25[0-5]|2[0-4]\d|1?\d{1,2})){2}|172.(?:1[6-9]|2\d|3[0-1])(?:.(?:25[0-5]|2[0-4]\d|1?\d{1,2})){2})(?::\d+)?$/;
+            return privateHostRegex.test(host);
+        })();
 
     const isDevelopment =
         process.env.NODE_ENV === "development" || isLocalEnvironment;
