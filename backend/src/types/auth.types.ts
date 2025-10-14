@@ -7,7 +7,8 @@ export type AuthenticatorTransport =
     | "hybrid"
     | "internal"
     | "nfc"
-    | "usb";
+    | "usb"
+    | "smart-card";
 
 export interface User {
     id: number;
