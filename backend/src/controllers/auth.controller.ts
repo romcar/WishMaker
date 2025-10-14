@@ -12,6 +12,7 @@ import {
     WebAuthnCredentialModel,
 } from "../models/auth.models";
 import { WebAuthnService } from "../services/webauthn.service";
+import { validateHighEntropySecret } from "../utils/entropy";
 import {
     LoginRequest,
     RegisterRequest,
@@ -27,39 +28,8 @@ export class AuthController {
             throw new Error("JWT_SECRET environment variable must be set");
         }
 
-        // Compute Shannon entropy (bits) for the provided secret
-        function computeEntropyBits(s: string): number {
-            const freq: Record<string, number> = {};
-            for (const ch of s) {
-                freq[ch] = (freq[ch] || 0) + 1;
-            }
-            const len = s.length;
-            let entropyPerSymbol = 0;
-            for (const k in freq) {
-                const p = freq[k] / len;
-                entropyPerSymbol += -p * Math.log2(p);
-            }
-            return entropyPerSymbol * len; // total bits
-        }
-
-        // Minimal length to avoid trivial secrets
-        const MIN_LENGTH = 16;
-        const MIN_ENTROPY_BITS = 128;
-
-        if (secret.length < MIN_LENGTH) {
-            throw new Error(
-                `JWT_SECRET must be at least ${MIN_LENGTH} characters long`
-            );
-        }
-
-        const entropy = computeEntropyBits(secret);
-        if (entropy < MIN_ENTROPY_BITS) {
-            throw new Error(
-                `JWT_SECRET entropy too low (${Math.round(
-                    entropy
-                )} bits). Provide a high-entropy secret (e.g. a securely generated token).`
-            );
-        }
+        // Validate secret entropy & length using shared utility
+        validateHighEntropySecret(secret);
 
         return secret;
     })();
@@ -532,6 +502,36 @@ export class AuthController {
         const refreshToken = `refresh_${Date.now()}_${Math.random()}`;
 
         // Store session in database
+        await AuthSessionModel.create({
+            user_id: userId,
+            session_token: sessionId,
+            refresh_token_hash: await bcrypt.hash(refreshToken, 10),
+            device_fingerprint: AuthController.generateDeviceFingerprint(req),
+            ip_address: req.ip,
+            user_agent: req.get("User-Agent"),
+            expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+            is_active: true,
+        });
+
+        return {
+            token: sessionToken,
+            refresh_token: refreshToken,
+            expires_in: 24 * 60 * 60, // 24 hours in seconds
+        };
+    }
+
+    /**
+     * Generate device fingerprint
+     */
+    private static generateDeviceFingerprint(req: Request): string {
+        const userAgent = req.get("User-Agent") || "";
+        const acceptLanguage = req.get("Accept-Language") || "";
+        const acceptEncoding = req.get("Accept-Encoding") || "";
+
+        const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}`;
+        return Buffer.from(fingerprint).toString("base64").substring(0, 64);
+    }
+}
         await AuthSessionModel.create({
             user_id: userId,
             session_token: sessionId,
