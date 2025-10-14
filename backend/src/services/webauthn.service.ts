@@ -3,9 +3,6 @@
 
 // Set up crypto polyfill for WebAuthn
 import { Crypto } from "@peculiar/webcrypto";
-if (!global.crypto) {
-    global.crypto = new Crypto() as any;
-}
 
 import type {
     GenerateRegistrationOptionsOpts,
