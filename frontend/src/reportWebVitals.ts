@@ -87,7 +87,6 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
     // Load and measure all Core Web Vitals
     if (typeof window !== "undefined") {
         import("web-vitals").then(
-        import { isLocalHost } from './utils/isLocalHost';
     ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
                 console.log("🚀 Starting Web Vitals measurement...");
 
