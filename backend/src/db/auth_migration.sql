@@ -143,7 +143,8 @@ CREATE TRIGGER update_two_factor_backup_updated_at
 DROP TRIGGER IF EXISTS update_user_preferences_updated_at ON user_preferences;
 CREATE TRIGGER update_user_preferences_updated_at
     BEFORE UPDATE ON user_preferences
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();-- Insert some demo data for development (optional)
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- Insert some demo data for development (optional)
 -- This creates a test user with basic settings
 INSERT INTO users (username, email, password_hash, display_name, email_verified)
 VALUES
