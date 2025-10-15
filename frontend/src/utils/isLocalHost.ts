@@ -14,7 +14,7 @@ export function isLocalHost(hostname?: string): boolean {
 	// Check for IPv4 addresses
 	const ipv4Parts = host.split(".");
 	if (ipv4Parts.length === 4 && ipv4Parts.every(part => /^\d+$/.test(part))) {
-		const [a, b, c, d] = ipv4Parts.map(Number);
+		const [a, b, _, __] = ipv4Parts.map(Number);
 		// 127.0.0.1/8
 		if (a === 127) return true;
 		// 10.0.0.0/8
