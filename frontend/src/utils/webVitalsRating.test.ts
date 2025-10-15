@@ -168,7 +168,7 @@ describe("WEB_VITALS_THRESHOLDS", () => {
         expect(WEB_VITALS_THRESHOLDS).toBeDefined();
 
         // Test that all metric thresholds exist
-        const expectedMetrics = ["CLS", "FID", "FCP", "LCP", "TTFB"];
+        const expectedMetrics = ["CLS", "FID", "FCP", "LCP", "TTFB", "INP"];
         expectedMetrics.forEach((metric) => {
             expect(WEB_VITALS_THRESHOLDS).toHaveProperty(metric);
             expect(
