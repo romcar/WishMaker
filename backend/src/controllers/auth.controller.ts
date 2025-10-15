@@ -317,14 +317,9 @@ export class AuthController {
             // Problems: 1) Users with single names, 2) Multiple middle names, 3) Cultural naming differences
             // SOLUTION: Store firstName/lastName as separate database columns
             // OR: Add proper name parsing library (e.g., humanparser)
-            const displayNameParts = (user.display_name || user.username).split(
-                " "
-            );
-            const firstName = displayNameParts[0] || user.username;
-            const lastName =
-                displayNameParts.length > 1
-                    ? displayNameParts.slice(1).join(" ")
-                    : "";
+            // Use first_name and last_name fields directly if available, otherwise fallback
+            const firstName = user.first_name || user.username || "";
+            const lastName = user.last_name || "";
 
             res.json({
                 success: true,
