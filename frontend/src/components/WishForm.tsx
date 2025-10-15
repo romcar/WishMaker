@@ -32,7 +32,7 @@ const WishForm: React.FC<WishFormProps> = ({ onSubmit }) => {
   // 8. Accessibility improvements (ARIA labels, screen reader support)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim() && description.trim()) {
+    if (title.trim()) {
       onSubmit({ title, description });
       setTitle('');
       setDescription('');
