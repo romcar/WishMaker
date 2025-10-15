@@ -493,7 +493,7 @@ export class AuthController {
         req: Request
     ): Promise<any> {
         // Use cryptographically secure random UUID for session ID
-        const sessionId = `session_${Date.now()}_${crypto.randomUUID()}`;
+        const sessionId = `session_${crypto.randomUUID()}`;
         const payload = {
             userId,
             sessionId,
