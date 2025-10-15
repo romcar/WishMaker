@@ -27,8 +27,21 @@ export class AuthController {
     private static JWT_SECRET: string;
 
     /**
-     * Initialize AuthController configuration.
-     * Must be called at application startup before handling requests.
+     * Initializes the AuthController configuration by setting the JWT secret.
+     *
+     * This method <b>must</b> be called exactly once at application startup, before any authentication-related
+     * requests are handled. It should be invoked in your application's entry point (e.g., before starting the
+     * HTTP server), as follows:
+     *
+     *     AuthController.init();
+     *
+     * The method reads the JWT secret from the environment variable <code>JWT_SECRET</code>, validates its
+     * entropy and length, and stores it for use in signing and verifying JWT tokens.
+     *
+     * <b>Failure to call this method before handling requests will result in authentication failures, as the
+     * JWT secret will be undefined.</b>
+     *
+     * @throws {Error} If <code>JWT_SECRET</code> is not set or does not meet entropy requirements.
      */
     public static init(): void {
         const secret = process.env.JWT_SECRET;
