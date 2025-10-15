@@ -170,7 +170,7 @@ const DeveloperToolbar: React.FC = () => {
                             <div className="dev-vitals-grid">
                                 {metrics.map((metric, index) => (
                                     <div
-                                        key={index}
+                                        key={`${metric.name}_${metric.timestamp}`}
                                         className="dev-vitals-card"
                                     >
                                         <div className="dev-vitals-header">
