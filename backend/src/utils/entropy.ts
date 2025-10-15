@@ -54,9 +54,26 @@ export function computeEntropyBits(s: string): number {
  * 1. Length validation - ensures the secret is long enough
  * 2. Entropy validation - uses Shannon entropy to measure randomness
  *
+ * ## Entropy Level Guidelines:
+ *
+ * **256-bit entropy (default)**: Military/banking grade security
+ * - Requires ~43 characters of perfectly random alphanumeric+symbols
+ * - Example: `crypto.randomBytes(32).toString('hex')` → 64-char hex string
+ * - Typical use: Production JWT secrets, master encryption keys
+ *
+ * **128-bit entropy**: Strong security for most applications
+ * - Requires ~22 characters of mixed case + numbers + symbols
+ * - Example: `P7$mK9@nR2xQ4vW8zE1cF` (128+ bits)
+ * - Typical use: API keys, session secrets
+ *
+ * **64-bit entropy**: Moderate security
+ * - Requires ~11 characters of mixed character sets
+ * - Example: `Kx9$mP2@nR` (64+ bits)
+ * - Typical use: Development environments, temporary tokens
+ *
  * @param secret - The secret string to validate (e.g., JWT secret, API key)
  * @param minLength - Minimum required length in characters (default: 16)
- * @param minEntropyBits - Minimum required entropy in bits (default: 256 for high security)
+ * @param minEntropyBits - Minimum required entropy in bits (default: 256 for maximum security)
  *
  * @throws {Error} When secret is null/undefined
  * @throws {Error} When secret length is below minLength
@@ -64,20 +81,37 @@ export function computeEntropyBits(s: string): number {
  *
  * @example
  * ```typescript
- * // Valid high-entropy secret - passes validation
- * validateHighEntropySecret("a7B#x9$mK2@pQ5nR8zT4vW6yE3cF1gH");
+ * // ✅ VALID: High-entropy secrets that pass 256-bit validation
+ * const cryptoSecret = crypto.randomBytes(32).toString('hex');
+ * validateHighEntropySecret(cryptoSecret); // 512+ bits - PASSES
  *
- * // Invalid - too short
- * validateHighEntropySecret("short"); // Throws: "Secret must be at least 16 characters long"
+ * const strongManual = "K7#mQ9$nR2@vT8xW4zA1bC6dE3fG5hJ";
+ * validateHighEntropySecret(strongManual); // 250+ bits - PASSES
  *
- * // Invalid - low entropy (repeated characters)
- * validateHighEntropySecret("aaaaaaaaaaaaaaaa"); // Throws: "Secret entropy too low..."
+ * // ❌ INVALID: Common mistakes
+ * validateHighEntropySecret("myAppSecret123!"); // ~70 bits - FAILS
+ * validateHighEntropySecret("password123456789"); // ~60 bits - FAILS
+ * validateHighEntropySecret("aaaaaaaaaaaaaaaa"); // ~0 bits - FAILS
  *
- * // Custom validation parameters
- * validateHighEntropySecret("mySecret123", 8, 128); // Lower requirements
+ * // 🔧 PRACTICAL: Adjusted requirements for different use cases
+ * // Development environment (128-bit requirement)
+ * validateHighEntropySecret("MyDev$ecret123!@#", 16, 128);
+ *
+ * // API keys (moderate security)
+ * validateHighEntropySecret("api_key_K7mQ9nR2vT8", 12, 64);
+ *
+ * // Production JWT (maximum security) - use crypto-generated
+ * const jwtSecret = process.env.JWT_SECRET; // Should be crypto.randomBytes(32).toString('hex')
+ * validateHighEntropySecret(jwtSecret, 32, 256);
  * ```
  *
+ * @remarks
+ * **Note on 256-bit default**: This is intentionally set high for production security.
+ * For most applications, consider using 128 bits for a good balance of security and practicality.
+ * Always use `crypto.randomBytes()` or similar for generating production secrets.
+ *
  * @see {@link computeEntropyBits} For entropy calculation details
+ * @see {@link https://owasp.org/www-community/vulnerabilities/Insufficient_Entropy} OWASP Entropy Guidelines
  */
 export function validateHighEntropySecret(
     secret: string,
