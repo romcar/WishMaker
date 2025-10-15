@@ -1,12 +1,12 @@
-// TODO: CRITICAL DATABASE SECURITY ISSUE
-// 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-6/critical-fix-database-schema-security-issues
-// The wishes table is missing a crucial user_id foreign key!
-// This means:
-// 1. No data isolation between users (users can see each other's wishes)
-// 2. No referential integrity (orphaned wishes if user deleted)
-// 3. Major privacy and security vulnerability
-//
-// IMMEDIATE FIXES REQUIRED:
+-- TODO: CRITICAL DATABASE SECURITY ISSUE
+-- 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-6/critical-fix-database-schema-security-issues
+-- The wishes table is missing a crucial user_id foreign key!
+-- This means:
+-- 1. No data isolation between users (users can see each other's wishes)
+-- 2. No referential integrity (orphaned wishes if user deleted)
+-- 3. Major privacy and security vulnerability
+--
+-- IMMEDIATE FIXES REQUIRED:
 -- ALTER TABLE wishes ADD COLUMN user_id INTEGER;
 -- ALTER TABLE wishes ADD CONSTRAINT fk_wishes_user_id
 --     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
