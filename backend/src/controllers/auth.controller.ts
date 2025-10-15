@@ -532,33 +532,3 @@ export class AuthController {
         return Buffer.from(fingerprint).toString("base64").substring(0, 64);
     }
 }
-        await AuthSessionModel.create({
-            user_id: userId,
-            session_token: sessionId,
-            refresh_token_hash: await bcrypt.hash(refreshToken, 10),
-            device_fingerprint: AuthController.generateDeviceFingerprint(req),
-            ip_address: req.ip,
-            user_agent: req.get("User-Agent"),
-            expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-            is_active: true,
-        });
-
-        return {
-            token: sessionToken,
-            refresh_token: refreshToken,
-            expires_in: 24 * 60 * 60, // 24 hours in seconds
-        };
-    }
-
-    /**
-     * Generate device fingerprint
-     */
-    private static generateDeviceFingerprint(req: Request): string {
-        const userAgent = req.get("User-Agent") || "";
-        const acceptLanguage = req.get("Accept-Language") || "";
-        const acceptEncoding = req.get("Accept-Encoding") || "";
-
-        const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}`;
-        return Buffer.from(fingerprint).toString("base64").substring(0, 64);
-    }
-}
