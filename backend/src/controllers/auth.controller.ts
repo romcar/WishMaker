@@ -23,17 +23,30 @@ import {
 import { validateHighEntropySecret } from "../utils/entropy";
 
 export class AuthController {
-    private static readonly JWT_SECRET = (() => {
+    // JWT secret is initialized at application startup via init()
+    private static JWT_SECRET: string;
+
+    /**
+     * Initialize AuthController configuration.
+     * Must be called at application startup before handling requests.
+     */
+    public static init(): void {
         const secret = process.env.JWT_SECRET;
         if (!secret) {
-            throw new Error("JWT_SECRET environment variable must be set");
+            throw new Error("JWT_SECRET environment variable must be set.");
         }
-
-        // Validate secret entropy & length using shared utility
-        validateHighEntropySecret(secret);
-
-        return secret;
-    })();
+        try {
+            // Validate secret entropy & length using shared utility
+            validateHighEntropySecret(secret);
+        } catch (err: any) {
+            throw new Error(
+                "JWT_SECRET does not meet entropy requirements: " +
+                (err && err.message ? err.message : String(err)) +
+                ". Please set a strong, high-entropy secret (e.g., at least 32 random characters)."
+            );
+        }
+        AuthController.JWT_SECRET = secret;
+    }
     private static readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
     private static readonly MAX_LOGIN_ATTEMPTS = 5;
 
