@@ -60,28 +60,13 @@ export class AuthController {
             }
             throw new Error(
                 "JWT_SECRET does not meet entropy requirements: " +
-                errMsg +
-                ". Please set a strong, high-entropy secret (e.g., at least 32 random characters)."
+                    errMsg +
+                    ". Please set a strong, high-entropy secret (e.g., at least 32 random characters)."
             );
         }
         AuthController.JWT_SECRET = secret;
     }
-=======
 
-export class AuthController {
-    // TODO: SECURITY CRITICAL - JWT secret must be from environment in production
-    // Remove fallback "your-secret-key" - application should fail if not set
-    // Use crypto.randomBytes(64).toString('hex') to generate secure secret
-    private static readonly JWT_SECRET =
-        process.env.JWT_SECRET || "your-secret-key";
-<<<<<<< HEAD
->>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
-=======
-
-    // TODO: ENHANCEMENT - Make security parameters configurable
-    // Move to environment variables or configuration service
-    // Consider different limits for different user types
->>>>>>> b62056a (feat: Implement comprehensive authentication system with Linear integration)
     private static readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
     private static readonly MAX_LOGIN_ATTEMPTS = 5;
 

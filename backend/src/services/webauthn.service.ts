@@ -15,13 +15,7 @@
 
 // Set up crypto polyfill for WebAuthn
 import { Crypto } from "@peculiar/webcrypto";
-<<<<<<< HEAD
 global.crypto = new Crypto();
-=======
-if (!global.crypto) {
-    global.crypto = new Crypto() as any;
-}
->>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
 
 import type {
     GenerateRegistrationOptionsOpts,
@@ -264,11 +258,9 @@ export class WebAuthnService {
             );
 
             if (credentials.length === 0) {
-<<<<<<< HEAD
-                throw new WebAuthnError("No WebAuthn credentials found for user");
-=======
-                throw new Error("No credentials found for user");
->>>>>>> 7d092da (feat: Add comprehensive authentication system with WebAuthn & developer toolbar)
+                throw new WebAuthnError(
+                    "No WebAuthn credentials found for user"
+                );
             }
 
             const allowCredentials = credentials.map((cred) => ({
