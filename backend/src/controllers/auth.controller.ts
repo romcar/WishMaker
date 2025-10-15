@@ -40,8 +40,8 @@ export class AuthController {
             validateHighEntropySecret(secret);
         } catch (err: unknown) {
             let errMsg: string;
-            if (err && typeof err === "object" && "message" in err && typeof (err as any).message === "string") {
-                errMsg = (err as { message: string }).message;
+            if (err instanceof Error) {
+                errMsg = err.message;
             } else {
                 errMsg = String(err);
             }
