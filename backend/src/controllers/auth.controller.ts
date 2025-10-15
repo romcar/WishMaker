@@ -38,10 +38,16 @@ export class AuthController {
         try {
             // Validate secret entropy & length using shared utility
             validateHighEntropySecret(secret);
-        } catch (err: any) {
+        } catch (err: unknown) {
+            let errMsg: string;
+            if (err && typeof err === "object" && "message" in err && typeof (err as any).message === "string") {
+                errMsg = (err as { message: string }).message;
+            } else {
+                errMsg = String(err);
+            }
             throw new Error(
                 "JWT_SECRET does not meet entropy requirements: " +
-                (err && err.message ? err.message : String(err)) +
+                errMsg +
                 ". Please set a strong, high-entropy secret (e.g., at least 32 random characters)."
             );
         }
