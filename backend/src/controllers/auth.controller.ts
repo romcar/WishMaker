@@ -502,7 +502,7 @@ export class AuthController {
 
         const sessionToken = jwt.sign(payload, AuthController.JWT_SECRET);
         // Use cryptographically secure random bytes for refresh token
-        const refreshToken = `refresh_${Date.now()}_${crypto
+        const refreshToken = `refresh_${crypto
             .randomBytes(32)
             .toString("hex")}`;
 
