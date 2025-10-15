@@ -114,7 +114,7 @@ The frontend will run on `http://localhost:3000`
 ### Backend (.env)
 
 ```env
-PORT=3000
+PORT=8000
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=wishmaker
@@ -125,7 +125,7 @@ DB_PASSWORD=postgres
 ### Frontend (.env)
 
 ```env
-REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_API_URL=http://localhost:3000/api
 ```
 
 ## API Endpoints

@@ -1,0 +1,297 @@
+/* Developer Toolbar Styles */
+/* Only loaded in development environments */
+
+/* Collapsed state */
+.dev-toolbar-collapsed {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.dev-toolbar-toggle {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dev-toolbar-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Expanded toolbar */
+.dev-toolbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    max-height: 50vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.dev-toolbar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f3f4f6;
+    background: #fafafa;
+}
+
+.dev-toolbar-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.dev-toolbar-tab {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #6b7280;
+}
+
+.dev-toolbar-tab:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.dev-toolbar-tab.active {
+    background: #3b82f6;
+    color: white;
+}
+
+.dev-toolbar-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dev-toolbar-button {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.dev-toolbar-button:hover {
+    background: #f3f4f6;
+}
+
+.dev-toolbar-close {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #6b7280;
+    transition: all 0.2s ease;
+}
+
+.dev-toolbar-close:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.dev-toolbar-content {
+    padding: 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.dev-toolbar-panel {
+    height: 100%;
+}
+
+.dev-toolbar-empty {
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* Web Vitals Styles */
+.dev-vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.dev-vitals-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.2s ease;
+}
+
+.dev-vitals-card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dev-vitals-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.dev-vitals-emoji {
+    font-size: 16px;
+}
+
+.dev-vitals-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    flex: 1;
+}
+
+.dev-vitals-value {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.dev-vitals-value.good {
+    color: #10b981;
+}
+
+.dev-vitals-value.needs-improvement {
+    color: #f59e0b;
+}
+
+.dev-vitals-value.poor {
+    color: #ef4444;
+}
+
+.dev-vitals-timestamp {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+/* Environment Styles */
+.dev-env-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dev-env-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+}
+
+.dev-env-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+    min-width: 120px;
+    flex-shrink: 0;
+}
+
+.dev-env-value {
+    font-size: 13px;
+    color: #6b7280;
+    font-family: "Monaco", "Menlo", monospace;
+}
+
+.dev-env-url,
+.dev-env-ua {
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dev-toolbar {
+        max-height: 60vh;
+    }
+
+    .dev-toolbar-header {
+        padding: 8px 12px;
+    }
+
+    .dev-toolbar-content {
+        padding: 12px;
+    }
+
+    .dev-vitals-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dev-env-item {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .dev-env-label {
+        min-width: auto;
+    }
+}
+
+/* Animation for smooth transitions */
+.dev-toolbar {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .dev-toolbar {
+        background: white;
+        border-top: 2px solid black;
+    }
+
+    .dev-toolbar-tab.active {
+        background: black;
+        color: white;
+    }
+
+    .dev-vitals-card,
+    .dev-env-item {
+        border: 1px solid black;
+    }
+}
