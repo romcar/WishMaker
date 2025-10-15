@@ -150,6 +150,8 @@ export class AuthController {
                 email,
                 password_hash: passwordHash,
                 display_name: `${firstName} ${lastName}`,
+                first_name: firstName,
+                last_name: lastName,
                 two_factor_enabled: false,
                 account_locked_until: undefined,
                 failed_login_attempts: 0,
@@ -312,14 +314,17 @@ export class AuthController {
                 req
             );
 
-            // TODO: MISMATCH - Fragile firstName/lastName extraction
-            // This approach assumes display_name is always "First Last" format
-            // Problems: 1) Users with single names, 2) Multiple middle names, 3) Cultural naming differences
-            // SOLUTION: Store firstName/lastName as separate database columns
-            // OR: Add proper name parsing library (e.g., humanparser)
-            // Use first_name and last_name fields directly if available, otherwise fallback
-            const firstName = user.first_name || user.username || "";
-            const lastName = user.last_name || "";
+            let firstName = user.first_name?.trim() || "";
+            let lastName = user.last_name?.trim() || "";
+
+            if (!firstName || !lastName) {
+                const parsedName = AuthController.parseDisplayName(
+                    user.display_name,
+                    user.username
+                );
+                if (!firstName) firstName = parsedName.firstName;
+                if (!lastName) lastName = parsedName.lastName;
+            }
 
             res.json({
                 success: true,
@@ -610,5 +615,57 @@ export class AuthController {
 
         const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}`;
         return Buffer.from(fingerprint).toString("base64").substring(0, 64);
+    }
+
+    /**
+     * Parse a user display name into first and last name fallbacks.
+     * - Handles "Last, First" formats
+     * - Splits on whitespace for multi-part names (first token => firstName, rest => lastName)
+     * - Falls back to username (splitting on dots) when display_name is absent
+     */
+    private static parseDisplayName(
+        displayName?: string | null,
+        username?: string | null
+    ): { firstName: string; lastName: string } {
+        const safe = (s?: string | null) => (s || "").trim();
+        const name = safe(displayName);
+        const user = safe(username);
+
+        if (name) {
+            // Handle "Last, First" (e.g., "Doe, John")
+            if (name.includes(",")) {
+                const parts = name
+                    .split(",")
+                    .map((p) => p.trim())
+                    .filter(Boolean);
+                const last = parts[0] || "";
+                const first = parts[1] || parts[0] || "";
+                return { firstName: first, lastName: last };
+            }
+
+            // Split by whitespace. First token -> firstName, remainder -> lastName
+            const parts = name.split(/\s+/).filter(Boolean);
+            if (parts.length === 1) {
+                return { firstName: parts[0], lastName: "" };
+            }
+            return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
+        }
+
+        // No display name: try to infer from username (e.g., "john.doe" => firstName: john, lastName: doe)
+        if (user) {
+            if (user.includes(".")) {
+                const parts = user.split(".").filter(Boolean);
+                if (parts.length === 1)
+                    return { firstName: parts[0], lastName: "" };
+                return {
+                    firstName: parts[0],
+                    lastName: parts.slice(1).join(" "),
+                };
+            }
+            // Fallback: use entire username as firstName
+            return { firstName: user, lastName: "" };
+        }
+
+        return { firstName: "", lastName: "" };
     }
 }

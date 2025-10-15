@@ -42,8 +42,15 @@ export class UserModel {
      */
     static async create(userData: CreateUserInput): Promise<User> {
         const query = `
-      INSERT INTO users (username, email, password_hash, display_name)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO users (
+        username,
+        email,
+        password_hash,
+        display_name,
+        first_name,
+        last_name
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
 
@@ -52,6 +59,8 @@ export class UserModel {
             userData.email,
             userData.password_hash || userData.password, // Support both field names
             userData.display_name || null,
+            userData.first_name || null,
+            userData.last_name || null,
         ];
 
         const result = await pool.query<UserQueryResult>(query, values);
