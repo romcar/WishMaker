@@ -2,6 +2,7 @@
 // Handles all authentication-related HTTP endpoints
 
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import {
@@ -12,7 +13,6 @@ import {
     WebAuthnCredentialModel,
 } from "../models/auth.models";
 import { WebAuthnService } from "../services/webauthn.service";
-import { validateHighEntropySecret } from "../utils/entropy";
 import {
     LoginRequest,
     RegisterRequest,
@@ -20,6 +20,7 @@ import {
     WebAuthnRegistrationRequest,
     WebAuthnVerificationRequest,
 } from "../types/auth.types";
+import { validateHighEntropySecret } from "../utils/entropy";
 
 export class AuthController {
     private static readonly JWT_SECRET = (() => {
@@ -491,7 +492,8 @@ export class AuthController {
         userId: number,
         req: Request
     ): Promise<any> {
-        const sessionId = `session_${Date.now()}_${Math.random()}`;
+        // Use cryptographically secure random UUID for session ID
+        const sessionId = `session_${Date.now()}_${crypto.randomUUID()}`;
         const payload = {
             userId,
             sessionId,
@@ -499,7 +501,10 @@ export class AuthController {
         };
 
         const sessionToken = jwt.sign(payload, AuthController.JWT_SECRET);
-        const refreshToken = `refresh_${Date.now()}_${Math.random()}`;
+        // Use cryptographically secure random bytes for refresh token
+        const refreshToken = `refresh_${Date.now()}_${crypto
+            .randomBytes(32)
+            .toString("hex")}`;
 
         // Store session in database
         await AuthSessionModel.create({
