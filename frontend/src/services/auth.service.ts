@@ -412,7 +412,7 @@ export class AuthService {
         return {
             user,
             token,
-            refreshToken,
+            refresh_token: refreshToken,
             isAuthenticated,
         };
     }
