@@ -246,7 +246,7 @@ export class WebAuthnService {
             );
 
             if (credentials.length === 0) {
-                throw new Error("No credentials found for user");
+                throw new WebAuthnError("No WebAuthn credentials found for user");
             }
 
             const allowCredentials = credentials.map((cred) => ({
