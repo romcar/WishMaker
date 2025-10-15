@@ -33,7 +33,7 @@ const WishForm: React.FC<WishFormProps> = ({ onSubmit }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      onSubmit({ title, description });
+      onSubmit({ title: title.trim(), description: description.trim() || undefined });
       setTitle('');
       setDescription('');
     }
