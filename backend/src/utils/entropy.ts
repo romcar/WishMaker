@@ -19,7 +19,7 @@ export function computeEntropyBits(s: string): number {
 export function validateHighEntropySecret(
     secret: string,
     minLength = 16,
-    minEntropyBits = 128
+    minEntropyBits = 256
 ): void {
     if (!secret) {
         throw new Error("Secret must be provided");
