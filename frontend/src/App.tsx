@@ -127,7 +127,7 @@ const UserMenu: React.FC = () => {
 function AppContent() {
     const { isAuthenticated, user } = useAuth();
     const [wishes, setWishes] = useState<Wish[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [authModalOpen, setAuthModalOpen] = useState(false);
 
