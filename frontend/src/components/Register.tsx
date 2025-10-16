@@ -3,9 +3,12 @@ import { useAuth } from "../contexts/AuthContext";
 import { AuthService } from "../services/auth.service";
 import {
     PublicKeyCredentialCreationOptionsJSON,
+    PublicKeyCredentialJSON,
     RegisterRequest,
 } from "../types/auth.types";
 import "./Register.css";
+
+type WebAuthnCredentialState = PublicKeyCredentialJSON | { success: true };
 
 interface RegisterProps {
     onSwitchToLogin?: () => void;
@@ -34,10 +37,8 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
         isPlatformAuthenticatorAvailable,
         setIsPlatformAuthenticatorAvailable,
     ] = useState(false);
-    // TODO: TYPE SAFETY - Replace 'any' with proper WebAuthn credential type
-    // Create proper TypeScript interface for WebAuthn credential response
-    // This improves type safety and developer experience
-    const [webAuthnCredential, setWebAuthnCredential] = useState<any>(null);
+    const [webAuthnCredential, setWebAuthnCredential] =
+        useState<WebAuthnCredentialState | null>(null);
     const [registrationStep, setRegistrationStep] = useState<
         "form" | "webauthn-setup" | "complete"
     >("form");
