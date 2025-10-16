@@ -640,11 +640,13 @@ export class AuthController {
         const userAgent = req.get("User-Agent") || "";
         const acceptLanguage = req.get("Accept-Language") || "";
         const acceptEncoding = req.get("Accept-Encoding") || "";
-        const acceptCharset = req.get("Accept-Charset") || "";
-        const dnt = req.get("DNT") || "";
+        // Removed Accept-Charset and DNT as they are unreliable/deprecated
+        // Add more reliable signals if available from client (custom headers)
+        const screenResolution = req.get("x-screen-resolution") || "";
+        const timezoneOffset = req.get("x-timezone-offset") || "";
 
         // Include more headers for better uniqueness while maintaining privacy
-        const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}|${acceptCharset}|${dnt}`;
+        const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}|${screenResolution}|${timezoneOffset}`;
 
         // Use SHA-256 hash instead of weak base64 encoding + truncation
         return crypto
