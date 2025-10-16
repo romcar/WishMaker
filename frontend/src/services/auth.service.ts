@@ -543,7 +543,7 @@ authApi.interceptors.response.use(
                 }
             } catch {
                 TokenManager.clearTokens();
-                window.location.reload(); // Redirect to login
+                window.dispatchEvent(new Event('auth:logout')); // Gracefully handle logout
             }
         }
 
