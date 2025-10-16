@@ -24,15 +24,8 @@ services:
         # 3. Implement proper JWT secret management
         # 4. Add SSL/TLS configuration variables
         # 5. Configure external service URLs (Redis, email, etc.)
-        environment:
-            DATABASE_URL: postgres://postgres:postgres@postgres:5432/wishmaker
-            DB_HOST: postgres
-            DB_PORT: 5432
-            DB_NAME: wishmaker
-            DB_USER: postgres
-            DB_PASSWORD: postgres
-            JWT_SECRET: "your-super-secret-jwt-key-change-in-production-use-crypto-randomBytes-32-toString-hex"
-            PORT: 8000
+        env_file:
+            - .env
         ports:
             - "8000:8000"
         depends_on:
@@ -41,9 +34,8 @@ services:
     frontend:
         build: ./frontend
         container_name: wishmaker-frontend
-        environment:
-            REACT_APP_API_URL: http://localhost:8000
-            PORT: 3000
+        env_file:
+            - .env
         ports:
             - "3000:3000"
         depends_on:
@@ -51,10 +43,8 @@ services:
     postgres:
         image: postgres:16-alpine
         container_name: wishmaker-db
-        environment:
-            POSTGRES_DB: wishmaker
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
+        env_file:
+            - .env
         ports:
             - "5432:5432"
         volumes:

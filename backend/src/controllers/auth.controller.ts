@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { RESERVED_USERNAMES } from "../global/constants";
 import {
     AuthSessionModel,
     SecurityEventModel,
@@ -67,7 +68,9 @@ export class AuthController {
         AuthController.JWT_SECRET = secret;
     }
 
-    private static readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+    private static readonly RATE_LIMIT_WINDOW = parseInt(
+        process.env.RATE_LIMIT_WINDOW_MS || "900000"
+    ); // 15 minutes default
     private static readonly MAX_LOGIN_ATTEMPTS = 5;
 
     /**
@@ -133,23 +136,7 @@ export class AuthController {
             }
 
             // Check for reserved usernames (system, security)
-            const reservedUsernames = [
-                "admin",
-                "root",
-                "user",
-                "test",
-                "api",
-                "www",
-                "mail",
-                "system",
-                "support",
-                "help",
-                "about",
-                "contact",
-                "null",
-                "undefined",
-            ];
-            if (reservedUsernames.includes(username.toLowerCase())) {
+            if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
                 res.status(400).json({
                     success: false,
                     message: "This username is reserved and cannot be used",

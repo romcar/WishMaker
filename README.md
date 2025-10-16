@@ -134,18 +134,41 @@ The frontend will run on `http://localhost:3000`
 ### Backend (.env)
 
 ```env
-PORT=8000
-DB_HOST=localhost
+# Database Configuration
+DATABASE_URL=postgres://postgres:postgres@postgres:5432/wishmaker
+DB_HOST=postgres
 DB_PORT=5432
 DB_NAME=wishmaker
 DB_USER=postgres
 DB_PASSWORD=postgres
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+
+# Backend Configuration
+PORT=8000
+NODE_ENV=development
+
+# WebAuthn Configuration
+RP_NAME=WishMaker
+RP_ID=localhost
+ORIGIN=http://localhost:3000
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:3000
+CORS_CREDENTIALS=true
+
+# Security & Rate Limiting
+REQUEST_SIZE_LIMIT=10mb
+RATE_LIMIT_WINDOW_MS=900000
+WEBAUTHN_TIMEOUT_MS=60000
+CHALLENGE_TIMEOUT_MS=300000
 ```
 
 ### Frontend (.env)
 
 ```env
-REACT_APP_API_URL=http://localhost:3000/api
+REACT_APP_API_URL=http://localhost:8000
 ```
 
 ## API Endpoints

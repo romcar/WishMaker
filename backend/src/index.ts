@@ -32,10 +32,24 @@ const PORT = process.env.PORT || 3000;
 // 4. Add cookie parsing for session management
 // 5. Configure trust proxy for load balancer support
 // 6. Add response compression for better performance
+
+// CORS Configuration
+const corsOptions = {
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    credentials: process.env.CORS_CREDENTIALS === "true" || true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+};
+
 // Middleware
-app.use(cors());
-app.use(express.json({ limit: "10mb" })); // Increase limit for WebAuthn responses
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(cors(corsOptions));
+app.use(express.json({ limit: process.env.REQUEST_SIZE_LIMIT || "10mb" })); // Configurable limit for WebAuthn responses
+app.use(
+    express.urlencoded({
+        extended: true,
+        limit: process.env.REQUEST_SIZE_LIMIT || "10mb",
+    })
+);
 
 // TODO: CRITICAL - Enhance security headers and middleware
 // 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-7/critical-implement-input-validation-and-sql-injection-protection

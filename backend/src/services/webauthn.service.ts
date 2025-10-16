@@ -45,7 +45,12 @@ export class WebAuthnService {
     private static readonly RP_ID = process.env.RP_ID || "localhost";
     private static readonly ORIGIN =
         process.env.ORIGIN || "http://localhost:3000";
-    private static readonly CHALLENGE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+    private static readonly CHALLENGE_TIMEOUT = parseInt(
+        process.env.CHALLENGE_TIMEOUT_MS || "300000"
+    ); // 5 minutes default
+    private static readonly WEBAUTHN_TIMEOUT = parseInt(
+        process.env.WEBAUTHN_TIMEOUT_MS || "60000"
+    ); // 1 minute default
 
     /**
      * Generate registration options for a user to register a new WebAuthn credential
@@ -71,7 +76,7 @@ export class WebAuthnService {
                 userID: new Uint8Array(Buffer.from(userId.toString())),
                 userName: user.email,
                 userDisplayName: user.display_name || user.username,
-                timeout: 60000, // 1 minute
+                timeout: WebAuthnService.WEBAUTHN_TIMEOUT, // Configurable timeout
                 attestationType: "none" as const, // For privacy, we don't need attestation
                 excludeCredentials: [],
                 authenticatorSelection: {
@@ -274,7 +279,7 @@ export class WebAuthnService {
                 rpID: WebAuthnService.RP_ID,
                 allowCredentials,
                 userVerification: "preferred",
-                timeout: 60000,
+                timeout: WebAuthnService.WEBAUTHN_TIMEOUT,
             });
 
             // Store the challenge
