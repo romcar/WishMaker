@@ -13,10 +13,14 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Application } from "express";
+import { AuthController } from "./controllers/auth.controller";
 import authRoutes from "./routes/auth.routes";
 import wishRoutes from "./routes/wish.routes";
 
 dotenv.config();
+
+// Initialize AuthController with JWT secret
+AuthController.init();
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;

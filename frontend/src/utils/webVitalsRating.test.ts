@@ -114,14 +114,16 @@ describe("getWebVitalsRating", () => {
 
     describe("Unknown metrics", () => {
         test("should throw an error for unknown metric names", () => {
-            expect(() => getWebVitalsRating("UNKNOWN", 100)).toThrow();
-            expect(() => getWebVitalsRating("", 500)).toThrow();
-            expect(() => getWebVitalsRating("INVALID_METRIC", 1000)).toThrow();
+            expect(() => getWebVitalsRating("UNKNOWN" as any, 100)).toThrow();
+            expect(() => getWebVitalsRating("" as any, 500)).toThrow();
+            expect(() =>
+                getWebVitalsRating("INVALID_METRIC" as any, 1000)
+            ).toThrow();
         });
 
         test("should throw an error for case-sensitive metric names", () => {
-            expect(() => getWebVitalsRating("cls", 0.05)).toThrow();
-            expect(() => getWebVitalsRating("lcp", 2000)).toThrow();
+            expect(() => getWebVitalsRating("cls" as any, 0.05)).toThrow();
+            expect(() => getWebVitalsRating("lcp" as any, 2000)).toThrow();
         });
     });
 

@@ -76,6 +76,7 @@ export class AuthController {
     static async register(req: Request, res: Response): Promise<void> {
         try {
             const {
+                username,
                 firstName,
                 lastName,
                 email,
@@ -84,11 +85,11 @@ export class AuthController {
             }: RegisterRequest = req.body;
 
             // Validate input
-            if (!firstName || !lastName || !email || !password) {
+            if (!username || !firstName || !lastName || !email || !password) {
                 res.status(400).json({
                     success: false,
                     message:
-                        "First name, last name, email, and password are required",
+                        "Username, first name, last name, email, and password are required",
                 });
                 return;
             }
@@ -119,26 +120,51 @@ export class AuthController {
                 return;
             }
 
-            // TODO: IMPROVEMENT - Enhanced username generation algorithm
-            // Consider more sophisticated username generation:
-            // 1. Handle unicode characters properly (use slugify library)
-            // 2. Add minimum username length validation (e.g., 3 characters)
-            // 3. Reserve list of inappropriate/system usernames
-            // 4. Consider using UUID suffix instead of incremental counter
-            const baseUsername =
-                `${firstName.toLowerCase()}${lastName.toLowerCase()}`.replace(
-                    /[^a-z0-9]/g,
-                    ""
-                );
-            let username = baseUsername;
-            let counter = 1;
+            // Validate username format and uniqueness
+            // Username should be alphanumeric, 3-30 characters, no spaces
+            const usernameRegex = /^[a-zA-Z0-9_-]{3,30}$/;
+            if (!usernameRegex.test(username)) {
+                res.status(400).json({
+                    success: false,
+                    message:
+                        "Username must be 3-30 characters long and contain only letters, numbers, underscores, and hyphens",
+                });
+                return;
+            }
 
-            // TODO: PERFORMANCE - Optimize username uniqueness check
-            // Current implementation has N+1 query problem for popular names
-            // Consider batch checking or using database constraints
-            while (await UserModel.findByUsername(username)) {
-                username = `${baseUsername}${counter}`;
-                counter++;
+            // Check for reserved usernames (system, security)
+            const reservedUsernames = [
+                "admin",
+                "root",
+                "user",
+                "test",
+                "api",
+                "www",
+                "mail",
+                "system",
+                "support",
+                "help",
+                "about",
+                "contact",
+                "null",
+                "undefined",
+            ];
+            if (reservedUsernames.includes(username.toLowerCase())) {
+                res.status(400).json({
+                    success: false,
+                    message: "This username is reserved and cannot be used",
+                });
+                return;
+            }
+
+            // Check if username is already taken
+            const existingUsername = await UserModel.findByUsername(username);
+            if (existingUsername) {
+                res.status(409).json({
+                    success: false,
+                    message: "Username is already taken",
+                });
+                return;
             }
 
             // Hash password
@@ -149,7 +175,8 @@ export class AuthController {
                 username,
                 email,
                 password_hash: passwordHash,
-                display_name: `${firstName} ${lastName}`,
+                display_name:
+                    `${firstName ?? ""} ${lastName ?? ""}`.trim() || username,
                 first_name: firstName,
                 last_name: lastName,
                 two_factor_enabled: false,
@@ -600,21 +627,31 @@ export class AuthController {
 
         return {
             token: sessionToken,
-            refresh_token: refreshToken,
+            refreshToken: refreshToken,
             expires_in: 24 * 60 * 60, // 24 hours in seconds
         };
     }
 
     /**
-     * Generate device fingerprint
+     * Generate device fingerprint using SHA-256 hash for security
+     * Creates a secure fingerprint from browser characteristics
      */
     private static generateDeviceFingerprint(req: Request): string {
         const userAgent = req.get("User-Agent") || "";
         const acceptLanguage = req.get("Accept-Language") || "";
         const acceptEncoding = req.get("Accept-Encoding") || "";
+        const acceptCharset = req.get("Accept-Charset") || "";
+        const dnt = req.get("DNT") || "";
 
-        const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}`;
-        return Buffer.from(fingerprint).toString("base64").substring(0, 64);
+        // Include more headers for better uniqueness while maintaining privacy
+        const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}|${acceptCharset}|${dnt}`;
+
+        // Use SHA-256 hash instead of weak base64 encoding + truncation
+        return crypto
+            .createHash("sha256")
+            .update(fingerprint)
+            .digest("hex")
+            .substring(0, 64);
     }
 
     /**

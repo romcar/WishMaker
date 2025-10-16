@@ -259,7 +259,9 @@ export class WebAuthnService {
 
             if (credentials.length === 0) {
                 throw new WebAuthnError(
-                    "No WebAuthn credentials found for user"
+                    "No WebAuthn credentials found for user",
+                    "NO_CREDENTIALS_FOUND",
+                    404
                 );
             }
 

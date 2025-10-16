@@ -19,6 +19,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
     const { register, error, isLoading, clearError } = useAuth();
 
     const [formData, setFormData] = useState<RegisterRequest>({
+        username: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -77,6 +78,13 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
     const validateForm = (): boolean => {
         const errors: Partial<RegisterRequest & { confirmPassword: string }> =
             {};
+
+        if (!formData.username.trim()) {
+            errors.username = "Username is required";
+        } else if (!/^[a-zA-Z0-9_-]{3,30}$/.test(formData.username)) {
+            errors.username =
+                "Username must be 3-30 characters long and contain only letters, numbers, underscores, and hyphens";
+        }
 
         if (!formData.firstName.trim()) {
             errors.firstName = "First name is required";
@@ -274,6 +282,26 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                     {error}
                 </div>
             )}
+
+            <div className="form-group">
+                <label htmlFor="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className={validationErrors.username ? "error" : ""}
+                    placeholder="Choose a unique username"
+                    autoComplete="username"
+                    disabled={isLoading}
+                />
+                {validationErrors.username && (
+                    <span className="field-error">
+                        {validationErrors.username}
+                    </span>
+                )}
+            </div>
 
             <div className="form-row">
                 <div className="form-group half">

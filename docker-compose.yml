@@ -31,6 +31,7 @@ services:
             DB_NAME: wishmaker
             DB_USER: postgres
             DB_PASSWORD: postgres
+            JWT_SECRET: "your-super-secret-jwt-key-change-in-production-use-crypto-randomBytes-32-toString-hex"
             PORT: 8000
         ports:
             - "8000:8000"

@@ -364,7 +364,7 @@ export class AuthService {
             }
 
             const response = await authApi.post("/refresh", {
-                refresh_token: refreshToken,
+                refreshToken,
             });
 
             const data = response.data;
@@ -412,7 +412,7 @@ export class AuthService {
         return {
             user,
             token,
-            refresh_token: refreshToken,
+            refreshToken,
             isAuthenticated,
         };
     }

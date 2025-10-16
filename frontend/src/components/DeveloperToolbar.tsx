@@ -168,7 +168,7 @@ const DeveloperToolbar: React.FC = () => {
                             </div>
                         ) : (
                             <div className="dev-vitals-grid">
-                                {metrics.map((metric, index) => (
+                                {metrics.map((metric) => (
                                     <div
                                         key={`${metric.name}_${metric.timestamp}`}
                                         className="dev-vitals-card"
