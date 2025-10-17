@@ -16,7 +16,7 @@ CREATE INDEX idx_wishes_user_created ON wishes(user_id, created_at DESC);
 CREATE INDEX idx_wishes_user_status ON wishes(user_id, status);
 
 -- Create unique constraint to prevent duplicate titles per user (case-sensitive)
-CREATE UNIQUE INDEX idx_wishes_user_title ON wishes(user_id, title);
+CREATE UNIQUE INDEX idx_wishes_user_title ON wishes(user_id, LOWER(title));
 
 -- For existing data: assign wishes to test user (development only)
 -- In production, this step would need careful handling of existing data
