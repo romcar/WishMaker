@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Metric } from "web-vitals";
+import { isLocalHost } from "../utils/isLocalHost";
 import {
     getWebVitalsRating,
     type WebVitalsRating,
 } from "../utils/webVitalsRating";
-import { isLocalHost } from "../utils/isLocalHost";
 import "./DeveloperToolbar.css";
 
 interface WebVitalsMetric {
@@ -168,7 +168,7 @@ const DeveloperToolbar: React.FC = () => {
                             </div>
                         ) : (
                             <div className="dev-vitals-grid">
-                                {metrics.map((metric, index) => (
+                                {metrics.map((metric) => (
                                     <div
                                         key={`${metric.name}_${metric.timestamp}`}
                                         className="dev-vitals-card"

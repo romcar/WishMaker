@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { RESERVED_USERNAMES } from "../global/constants";
 import {
     AuthSessionModel,
     SecurityEventModel,
@@ -60,13 +61,16 @@ export class AuthController {
             }
             throw new Error(
                 "JWT_SECRET does not meet entropy requirements: " +
-                errMsg +
-                ". Please set a strong, high-entropy secret (e.g., at least 32 random characters)."
+                    errMsg +
+                    ". Please set a strong, high-entropy secret (e.g., at least 32 random characters)."
             );
         }
         AuthController.JWT_SECRET = secret;
     }
-    private static readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+
+    private static readonly RATE_LIMIT_WINDOW = parseInt(
+        process.env.RATE_LIMIT_WINDOW_MS || "900000"
+    ); // 15 minutes default
     private static readonly MAX_LOGIN_ATTEMPTS = 5;
 
     /**
@@ -76,16 +80,19 @@ export class AuthController {
         try {
             const {
                 username,
+                firstName,
+                lastName,
                 email,
                 password,
                 confirmPassword,
             }: RegisterRequest = req.body;
 
             // Validate input
-            if (!username || !email || !password) {
+            if (!username || !firstName || !lastName || !email || !password) {
                 res.status(400).json({
                     success: false,
-                    message: "Username, email, and password are required",
+                    message:
+                        "Username, first name, last name, email, and password are required",
                 });
                 return;
             }
@@ -116,11 +123,33 @@ export class AuthController {
                 return;
             }
 
+            // Validate username format and uniqueness
+            // Username should be alphanumeric, 3-30 characters, no spaces
+            const usernameRegex = /^[a-zA-Z0-9_-]{3,30}$/;
+            if (!usernameRegex.test(username)) {
+                res.status(400).json({
+                    success: false,
+                    message:
+                        "Username must be 3-30 characters long and contain only letters, numbers, underscores, and hyphens",
+                });
+                return;
+            }
+
+            // Check for reserved usernames (system, security)
+            if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
+                res.status(400).json({
+                    success: false,
+                    message: "This username is reserved and cannot be used",
+                });
+                return;
+            }
+
+            // Check if username is already taken
             const existingUsername = await UserModel.findByUsername(username);
             if (existingUsername) {
                 res.status(409).json({
                     success: false,
-                    message: "Username already taken",
+                    message: "Username is already taken",
                 });
                 return;
             }
@@ -133,7 +162,10 @@ export class AuthController {
                 username,
                 email,
                 password_hash: passwordHash,
-                display_name: username,
+                display_name:
+                    `${firstName ?? ""} ${lastName ?? ""}`.trim() || username,
+                first_name: firstName,
+                last_name: lastName,
                 two_factor_enabled: false,
                 account_locked_until: undefined,
                 failed_login_attempts: 0,
@@ -148,7 +180,7 @@ export class AuthController {
                 event_type: "user_registered",
                 ip_address: req.ip,
                 user_agent: req.get("User-Agent"),
-                metadata: { username, email },
+                metadata: { firstName, lastName, username, email },
             });
 
             res.status(201).json({
@@ -156,6 +188,8 @@ export class AuthController {
                 message: "User registered successfully",
                 user: {
                     id: user.id,
+                    firstName,
+                    lastName,
                     username: user.username,
                     email: user.email,
                     display_name: user.display_name,
@@ -254,6 +288,9 @@ export class AuthController {
                 });
             }
 
+            // Update last login timestamp
+            await UserModel.updateLastLogin(user.id);
+
             // Check if 2FA is required
             const webauthnCredentials =
                 await WebAuthnCredentialModel.findByUserId(user.id);
@@ -276,22 +313,43 @@ export class AuthController {
                 return;
             }
 
+            // Log successful login security event
+            await SecurityEventModel.create({
+                user_id: user.id,
+                event_type: "login_success",
+                ip_address: req.ip,
+                user_agent: req.get("User-Agent"),
+                metadata: { email },
+            });
+
             // Create session (no 2FA required)
             const sessionData = await AuthController.createSession(
                 user.id,
                 req
             );
 
+            const parsedName = AuthController.parseDisplayName(
+                user.display_name,
+                user.username
+            );
+            const firstName = user.first_name?.trim() || parsedName.firstName;
+            const lastName = user.last_name?.trim() || parsedName.lastName;
             res.json({
                 success: true,
                 message: "Login successful",
                 user: {
                     id: user.id,
-                    username: user.username,
                     email: user.email,
-                    display_name: user.display_name,
+                    firstName,
+                    lastName,
+                    two_factor_enabled: user.two_factor_enabled,
+                    email_verified: user.email_verified,
+                    created_at: user.created_at.toISOString(),
+                    last_login_at: user.last_login_at?.toISOString(),
                 },
-                session: sessionData,
+                session_token: sessionData.token,
+                refresh_token: sessionData.refresh_token,
+                expires_in: sessionData.expires_in,
             });
         } catch (error) {
             console.error("Login error:", error);
@@ -550,20 +608,83 @@ export class AuthController {
 
         return {
             token: sessionToken,
-            refresh_token: refreshToken,
+            refreshToken: refreshToken,
             expires_in: 24 * 60 * 60, // 24 hours in seconds
         };
     }
 
     /**
-     * Generate device fingerprint
+     * Generate device fingerprint using SHA-256 hash for security
+     * Creates a secure fingerprint from browser characteristics
      */
     private static generateDeviceFingerprint(req: Request): string {
         const userAgent = req.get("User-Agent") || "";
         const acceptLanguage = req.get("Accept-Language") || "";
         const acceptEncoding = req.get("Accept-Encoding") || "";
+        // Removed Accept-Charset and DNT as they are unreliable/deprecated
+        // Add more reliable signals if available from client (custom headers)
+        const screenResolution = req.get("x-screen-resolution") || "";
+        const timezoneOffset = req.get("x-timezone-offset") || "";
 
-        const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}`;
-        return Buffer.from(fingerprint).toString("base64").substring(0, 64);
+        // Include more headers for better uniqueness while maintaining privacy
+        const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}|${screenResolution}|${timezoneOffset}`;
+
+        // Use SHA-256 hash instead of weak base64 encoding + truncation
+        return crypto
+            .createHash("sha256")
+            .update(fingerprint)
+            .digest("hex");
+    }
+
+    /**
+     * Parse a user display name into first and last name fallbacks.
+     * - Handles "Last, First" formats
+     * - Splits on whitespace for multi-part names (first token => firstName, rest => lastName)
+     * - Falls back to username (splitting on dots) when display_name is absent
+     */
+    private static parseDisplayName(
+        displayName?: string | null,
+        username?: string | null
+    ): { firstName: string; lastName: string } {
+        const safe = (s?: string | null) => (s || "").trim();
+        const name = safe(displayName);
+        const user = safe(username);
+
+        if (name) {
+            // Handle "Last, First" (e.g., "Doe, John")
+            if (name.includes(",")) {
+                const parts = name
+                    .split(",")
+                    .map((p) => p.trim())
+                    .filter(Boolean);
+                const last = parts[0] || "";
+                const first = parts[1] || parts[0] || "";
+                return { firstName: first, lastName: last };
+            }
+
+            // Split by whitespace. First token -> firstName, remainder -> lastName
+            const parts = name.split(/\s+/).filter(Boolean);
+            if (parts.length === 1) {
+                return { firstName: parts[0], lastName: "" };
+            }
+            return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
+        }
+
+        // No display name: try to infer from username (e.g., "john.doe" => firstName: john, lastName: doe)
+        if (user) {
+            if (user.includes(".")) {
+                const parts = user.split(".").filter(Boolean);
+                if (parts.length === 1)
+                    return { firstName: parts[0], lastName: "" };
+                return {
+                    firstName: parts[0],
+                    lastName: parts.slice(1).join(" "),
+                };
+            }
+            // Fallback: use entire username as firstName
+            return { firstName: user, lastName: "" };
+        }
+
+        return { firstName: "", lastName: "" };
     }
 }

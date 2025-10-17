@@ -27,6 +27,8 @@ export interface User {
     email: string;
     password_hash: string;
     display_name?: string;
+    first_name?: string | null;
+    last_name?: string | null;
     is_active: boolean;
     email_verified: boolean;
     two_factor_enabled: boolean;
@@ -44,6 +46,8 @@ export interface CreateUserInput {
     password?: string; // Plain text password (will be hashed)
     password_hash?: string; // Hashed password
     display_name?: string;
+    first_name?: string | null;
+    last_name?: string | null;
     two_factor_enabled?: boolean;
     account_locked_until?: Date;
     failed_login_attempts?: number;
@@ -256,6 +260,8 @@ export interface WebAuthnVerificationResponse {
 // Request/Response Types for Controllers
 export interface RegisterRequest {
     username: string;
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
     confirmPassword: string;

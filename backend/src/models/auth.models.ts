@@ -1,6 +1,18 @@
 // Authentication Database Models
 // This file contains all database interaction methods for authentication
 
+// TODO: CRITICAL - Database model improvements and security
+// 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-6/critical-fix-database-schema-security-issues
+// 1. Add proper database transactions for multi-table operations
+// 2. Implement soft delete for user accounts (GDPR compliance)
+// 3. Add database query optimization and indexing strategies
+// 4. Implement connection pooling and query caching
+// 5. Add comprehensive error handling and logging
+// 6. Add data validation at the model level
+// 7. Implement audit trails for all user data changes
+// 8. Add backup and recovery procedures
+// 9. Implement data encryption for sensitive fields
+// 10. Add query performance monitoring and optimization
 import pool from "../db/pool";
 import {
     AuthChallenge,
@@ -17,13 +29,28 @@ import {
 } from "../types/auth.types";
 
 export class UserModel {
+    // TODO: IMPROVEMENT - Enhance UserModel functionality
+    // 1. Add user profile management methods
+    // 2. Implement user role and permission management
+    // 3. Add user preference and settings management
+    // 4. Implement account verification and email confirmation
+    // 5. Add social media account linking capabilities
+    // 6. Implement user activity tracking and analytics
+    // 7. Add user data export and deletion methods (GDPR)
     /**
      * Create a new user
      */
     static async create(userData: CreateUserInput): Promise<User> {
         const query = `
-      INSERT INTO users (username, email, password_hash, display_name)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO users (
+        username,
+        email,
+        password_hash,
+        display_name,
+        first_name,
+        last_name
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
 
@@ -32,6 +59,8 @@ export class UserModel {
             userData.email,
             userData.password_hash || userData.password, // Support both field names
             userData.display_name || null,
+            userData.first_name || null,
+            userData.last_name || null,
         ];
 
         const result = await pool.query<UserQueryResult>(query, values);

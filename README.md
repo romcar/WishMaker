@@ -11,6 +11,26 @@ A full-stack wish making application built with React, TypeScript, Node.js, Expr
 - 🔒 Type-safe with TypeScript across frontend and backend
 - 🐳 Docker support for easy database setup
 
+<!-- TODO: CRITICAL - Infrastructure and deployment improvements needed
+🎫 Linear Tickets:
+- https://linear.app/romcar/issue/ROM-5/critical-fix-authentication-security-vulnerabilities
+- https://linear.app/romcar/issue/ROM-6/critical-fix-database-schema-security-issues
+- https://linear.app/romcar/issue/ROM-7/critical-implement-input-validation-and-sql-injection-protection
+- https://linear.app/romcar/issue/ROM-10/implement-comprehensive-testing-infrastructure
+- https://linear.app/romcar/issue/ROM-11/production-infrastructure-and-devops-setup
+
+1. Security: Missing authentication/authorization, no HTTPS, vulnerable to SQL injection
+2. Performance: No caching, no CDN, no optimization for production
+3. Monitoring: No logging, error tracking, health checks, or metrics
+4. Testing: No unit tests, integration tests, or E2E tests
+5. CI/CD: No automated testing, deployment pipeline, or environment management
+6. Documentation: Missing API documentation, development guidelines, deployment docs
+7. Scalability: No load balancing, database optimization, or horizontal scaling
+8. Backup: No database backups, disaster recovery, or data retention policies
+9. Compliance: No GDPR compliance, audit trails, or data protection measures
+10. DevOps: Missing staging environment, rollback procedures, zero-downtime deployments
+-->
+
 ## Tech Stack
 
 ### Frontend
@@ -114,18 +134,41 @@ The frontend will run on `http://localhost:3000`
 ### Backend (.env)
 
 ```env
-PORT=8000
-DB_HOST=localhost
+# Database Configuration
+DATABASE_URL=postgres://postgres:postgres@postgres:5432/wishmaker
+DB_HOST=postgres
 DB_PORT=5432
 DB_NAME=wishmaker
 DB_USER=postgres
 DB_PASSWORD=postgres
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+
+# Backend Configuration
+PORT=8000
+NODE_ENV=development
+
+# WebAuthn Configuration
+RP_NAME=WishMaker
+RP_ID=localhost
+ORIGIN=http://localhost:3000
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:3000
+CORS_CREDENTIALS=true
+
+# Security & Rate Limiting
+REQUEST_SIZE_LIMIT=10mb
+RATE_LIMIT_WINDOW_MS=900000
+WEBAUTHN_TIMEOUT_MS=60000
+CHALLENGE_TIMEOUT_MS=300000
 ```
 
 ### Frontend (.env)
 
 ```env
-REACT_APP_API_URL=http://localhost:3000/api
+REACT_APP_API_URL=http://localhost:8000
 ```
 
 ## API Endpoints

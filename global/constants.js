@@ -1,0 +1,16 @@
+export const RESERVED_USERNAMESx = [
+    "admin",
+    "root",
+    "user",
+    "test",
+    "api",
+    "www",
+    "mail",
+    "system",
+    "support",
+    "help",
+    "about",
+    "contact",
+    "null",
+    "undefined",
+];

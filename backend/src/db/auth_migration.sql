@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL, -- bcrypt hash
     display_name VARCHAR(100),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
     is_active BOOLEAN DEFAULT true,
     email_verified BOOLEAN DEFAULT false,
     two_factor_enabled BOOLEAN DEFAULT false,
@@ -146,9 +148,25 @@ CREATE TRIGGER update_user_preferences_updated_at
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 -- Insert some demo data for development (optional)
 -- This creates a test user with basic settings
-INSERT INTO users (username, email, password_hash, display_name, email_verified)
+INSERT INTO users (
+    username,
+    email,
+    password_hash,
+    display_name,
+    first_name,
+    last_name,
+    email_verified
+)
 VALUES
-    ('testuser', 'test@example.com', '$2b$10$rXrHYODNLeN3/Fm3SjLKgeFxJ6zcUSf6jKJ.zc.Dc2Q5v9mZSE1J6', 'Test User', true)
+    (
+        'testuser',
+        'test@example.com',
+        '$2b$10$rXrHYODNLeN3/Fm3SjLKgeFxJ6zcUSf6jKJ.zc.Dc2Q5v9mZSE1J6',
+        'Test User',
+        'Test',
+        'User',
+        true
+    )
 ON CONFLICT (email) DO NOTHING;
 
 -- Insert default preferences for the test user

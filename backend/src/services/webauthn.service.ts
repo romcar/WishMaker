@@ -1,6 +1,18 @@
 // WebAuthn Service for handling biometric authentication
 // Provides core WebAuthn functionality for registration and authentication
 
+// TODO: ENHANCEMENT - Improve WebAuthn service functionality
+// 1. Add support for multiple authenticator types (roaming, platform)
+// 2. Implement authenticator attestation verification
+// 3. Add support for conditional UI and passkey management
+// 4. Implement backup and recovery for WebAuthn credentials
+// 5. Add support for cross-device authentication flows
+// 6. Implement credential management and device naming
+// 7. Add WebAuthn analytics and usage tracking
+// 8. Support for WebAuthn Level 3 features
+// 9. Add enterprise features (attestation policies, etc.)
+// 10. Implement WebAuthn credential migration tools
+
 // Set up crypto polyfill for WebAuthn
 import { Crypto } from "@peculiar/webcrypto";
 global.crypto = new Crypto();
@@ -33,7 +45,12 @@ export class WebAuthnService {
     private static readonly RP_ID = process.env.RP_ID || "localhost";
     private static readonly ORIGIN =
         process.env.ORIGIN || "http://localhost:3000";
-    private static readonly CHALLENGE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+    private static readonly CHALLENGE_TIMEOUT = parseInt(
+        process.env.CHALLENGE_TIMEOUT_MS || "300000"
+    ); // 5 minutes default
+    private static readonly WEBAUTHN_TIMEOUT = parseInt(
+        process.env.WEBAUTHN_TIMEOUT_MS || "60000"
+    ); // 1 minute default
 
     /**
      * Generate registration options for a user to register a new WebAuthn credential
@@ -59,7 +76,7 @@ export class WebAuthnService {
                 userID: new Uint8Array(Buffer.from(userId.toString())),
                 userName: user.email,
                 userDisplayName: user.display_name || user.username,
-                timeout: 60000, // 1 minute
+                timeout: WebAuthnService.WEBAUTHN_TIMEOUT, // Configurable timeout
                 attestationType: "none" as const, // For privacy, we don't need attestation
                 excludeCredentials: [],
                 authenticatorSelection: {
@@ -246,7 +263,11 @@ export class WebAuthnService {
             );
 
             if (credentials.length === 0) {
-                throw new WebAuthnError("No WebAuthn credentials found for user");
+                throw new WebAuthnError(
+                    "No biometric credentials registered for this account",
+                    "NO_CREDENTIALS_FOUND",
+                    404
+                );
             }
 
             const allowCredentials = credentials.map((cred) => ({
@@ -258,7 +279,7 @@ export class WebAuthnService {
                 rpID: WebAuthnService.RP_ID,
                 allowCredentials,
                 userVerification: "preferred",
-                timeout: 60000,
+                timeout: WebAuthnService.WEBAUTHN_TIMEOUT,
             });
 
             // Store the challenge
