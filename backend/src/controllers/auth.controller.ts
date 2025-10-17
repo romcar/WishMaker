@@ -633,8 +633,7 @@ export class AuthController {
         return crypto
             .createHash("sha256")
             .update(fingerprint)
-            .digest("hex")
-            .substring(0, 64);
+            .digest("hex");
     }
 
     /**
