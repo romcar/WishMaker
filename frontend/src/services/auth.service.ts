@@ -543,7 +543,7 @@ authApi.interceptors.response.use(
                 }
             } catch {
                 TokenManager.clearTokens();
-                window.dispatchEvent(new Event('auth:logout')); // Gracefully handle logout
+                window.dispatchEvent(new CustomEvent('auth:logout', { detail: { reason: 'token_refresh_failed' } })); // Gracefully handle logout
             }
         }
 
