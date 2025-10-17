@@ -59,8 +59,8 @@ api.interceptors.response.use(
                     // TODO: ENHANCEMENT - Add response validation
                     // Should validate response structure before using data
                     // Add error handling for malformed refresh responses
-                    const { token, refreshToken } = response.data;
-                    TokenManager.setToken(token);
+                    const { accessToken, refreshToken } = response.data;
+                    TokenManager.setToken(accessToken);
                     TokenManager.setRefreshToken(refreshToken);
 
                     // Retry the original request with the new token
