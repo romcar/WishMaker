@@ -328,18 +328,12 @@ export class AuthController {
                 req
             );
 
-            let firstName = user.first_name?.trim() || "";
-            let lastName = user.last_name?.trim() || "";
-
-            if (!firstName || !lastName) {
-                const parsedName = AuthController.parseDisplayName(
-                    user.display_name,
-                    user.username
-                );
-                if (!firstName) firstName = parsedName.firstName;
-                if (!lastName) lastName = parsedName.lastName;
-            }
-
+            const parsedName = AuthController.parseDisplayName(
+                user.display_name,
+                user.username
+            );
+            const firstName = user.first_name?.trim() || parsedName.firstName;
+            const lastName = user.last_name?.trim() || parsedName.lastName;
             res.json({
                 success: true,
                 message: "Login successful",
