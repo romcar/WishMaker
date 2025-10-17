@@ -264,7 +264,7 @@ export class WebAuthnService {
 
             if (credentials.length === 0) {
                 throw new WebAuthnError(
-                    "Authentication failed",
+                    "No biometric credentials registered for this account",
                     "NO_CREDENTIALS_FOUND",
                     404
                 );
