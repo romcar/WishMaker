@@ -1,4 +1,4 @@
-export const RESERVED_USERNAMESx = [
+export const RESERVED_USERNAMES: readonly string[] = [
     "admin",
     "root",
     "user",

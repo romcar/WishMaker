@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { RESERVED_USERNAMES } from "../global/constants";
+import { RESERVED_USERNAMES } from "../constants/reserved-usernames";
 import {
     AuthSessionModel,
     SecurityEventModel,
@@ -630,10 +630,7 @@ export class AuthController {
         const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}|${screenResolution}|${timezoneOffset}`;
 
         // Use SHA-256 hash instead of weak base64 encoding + truncation
-        return crypto
-            .createHash("sha256")
-            .update(fingerprint)
-            .digest("hex");
+        return crypto.createHash("sha256").update(fingerprint).digest("hex");
     }
 
     /**

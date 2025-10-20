@@ -11,8 +11,6 @@
 # 9. Add backup and restore services
 # 10. Implement CI/CD pipeline integration
 
-version: "3.8"
-
 services:
     backend:
         build: ./backend

@@ -17,6 +17,8 @@ import {
     RegistrationResponse,
     User,
 } from "../types/auth.types";
+import { isGitHubPages } from "../services/mock-api";
+import { mockDemoUser } from "../services/auth.service";
 
 // TODO: ENHANCEMENT - Improve AuthContext functionality
 // 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-8/implement-complete-authentication-system
@@ -116,6 +118,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const initializeAuth = async () => {
             try {
                 dispatch({ type: "SET_LOADING", payload: true });
+
+                // In GitHub Pages demo mode, automatically "log in" demo user
+                if (isGitHubPages) {
+                    dispatch({
+                        type: "LOGIN_SUCCESS",
+                        payload: {
+                            user: mockDemoUser,
+                            token: "demo-token",
+                            refreshToken: "demo-refresh-token",
+                        },
+                    });
+                    dispatch({ type: "SET_LOADING", payload: false });
+                    return;
+                }
 
                 const authState = AuthService.getAuthState();
 
@@ -270,7 +286,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Logout function
     const logout = async (): Promise<void> => {
         try {
-            await AuthService.logout();
+            // In demo mode, don't call backend logout service
+            if (!isGitHubPages) {
+                await AuthService.logout();
+            }
         } catch (error) {
             console.error("Logout error:", error);
         } finally {

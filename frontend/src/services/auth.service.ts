@@ -16,6 +16,17 @@ const API_BASE_URL = `${
     process.env.REACT_APP_API_URL || "http://localhost:8000"
 }/api/auth`;
 
+// Mock user for demo mode
+export const mockDemoUser: User = {
+    id: 1,
+    email: "demo@wishmaker.app",
+    firstName: "Demo",
+    lastName: "User",
+    two_factor_enabled: false,
+    email_verified: true,
+    created_at: new Date().toISOString()
+};
+
 // Create dedicated axios instance for auth
 const authApi = axios.create({
     baseURL: API_BASE_URL,

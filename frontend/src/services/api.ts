@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { CreateWishInput, UpdateWishInput, Wish } from "../types/wish.types";
 import { TokenManager } from "./auth.service";
+import { mockWishAPI, isGitHubPages } from "./mock-api";
 
 // TODO: ENVIRONMENT - Move API URL to environment configuration file
 // Need to create .env file with REACT_APP_API_URL for production deployment
@@ -49,19 +50,20 @@ api.interceptors.response.use(
                 // Also check response structure matches { accessToken, refreshToken }
                 const refreshToken = TokenManager.getRefreshToken();
                 if (refreshToken) {
-                    const response = await axios.post(
-                        `${API_BASE_URL}/auth/refresh`,
-                        {
-                            refreshToken,
-                        }
-                    );
+                    const response: AxiosResponse<{
+                        accessToken: string;
+                        refreshToken: string;
+                    }> = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+                        refreshToken,
+                    });
 
                     // TODO: ENHANCEMENT - Add response validation
                     // Should validate response structure before using data
                     // Add error handling for malformed refresh responses
-                    const { accessToken, refreshToken } = response.data;
+                    const { accessToken, refreshToken: newRefreshToken } =
+                        response.data;
                     TokenManager.setToken(accessToken);
-                    TokenManager.setRefreshToken(refreshToken);
+                    TokenManager.setRefreshToken(newRefreshToken);
 
                     // Retry the original request with the new token
                     originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -143,6 +145,9 @@ export const handleAPIError = (error: any): string => {
 // Enhanced wishAPI with better error handling
 export const wishAPI = {
     getAllWishes: async (): Promise<Wish[]> => {
+        if (isGitHubPages) {
+            return mockWishAPI.getWishes();
+        }
         try {
             const response = await api.get<Wish[]>("/wishes");
             return response.data;
@@ -152,6 +157,9 @@ export const wishAPI = {
     },
 
     getWishById: async (id: number): Promise<Wish> => {
+        if (isGitHubPages) {
+            return mockWishAPI.getWish(id);
+        }
         try {
             const response = await api.get<Wish>(`/wishes/${id}`);
             return response.data;
@@ -161,6 +169,9 @@ export const wishAPI = {
     },
 
     createWish: async (wish: CreateWishInput): Promise<Wish> => {
+        if (isGitHubPages) {
+            return mockWishAPI.createWish(wish);
+        }
         try {
             if (!isAuthenticatedForAPI()) {
                 throw new Error("You must be logged in to create a wish.");
@@ -173,6 +184,9 @@ export const wishAPI = {
     },
 
     updateWish: async (id: number, wish: UpdateWishInput): Promise<Wish> => {
+        if (isGitHubPages) {
+            return mockWishAPI.updateWish(id, wish);
+        }
         try {
             if (!isAuthenticatedForAPI()) {
                 throw new Error("You must be logged in to update a wish.");
@@ -185,6 +199,9 @@ export const wishAPI = {
     },
 
     deleteWish: async (id: number): Promise<void> => {
+        if (isGitHubPages) {
+            return mockWishAPI.deleteWish(id);
+        }
         try {
             if (!isAuthenticatedForAPI()) {
                 throw new Error("You must be logged in to delete a wish.");

@@ -8,6 +8,7 @@
 // 6. Router setup for multiple pages/views
 import { useEffect, useState } from "react";
 import "./App.css";
+import DemoBanner from "./components/DemoBanner";
 import DeveloperToolbar from "./components/DeveloperToolbar";
 import Login from "./components/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -125,7 +126,7 @@ const UserMenu: React.FC = () => {
 
 // Main App Content Component
 function AppContent() {
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated } = useAuth();
     const [wishes, setWishes] = useState<Wish[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -212,6 +213,7 @@ function AppContent() {
 
     return (
         <div className="App">
+            <DemoBanner />
             <header className="App-header">
                 <div className="header-content">
                     <div className="header-left">
