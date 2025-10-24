@@ -1,23 +1,47 @@
 {
-  "name": "wishmaker",
-  "version": "1.0.0",
-  "description": "A full-stack wish making application built with React, TypeScript, Node.js, Express, and PostgreSQL.",
-  "scripts": {
-    "docker:up": "docker-compose up -d --build",
-    "docker:down": "docker-compose down",
-    "docker:backend": "docker-compose up -d --build backend",
-    "docker:frontend": "docker-compose up -d --build frontend",
-    "docker:db": "docker-compose up -d db",
-    "docker:logs": "docker-compose logs -f"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/romcar/WishMaker.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/romcar/WishMaker/issues"
-  },
-  "homepage": "https://github.com/romcar/WishMaker#readme"
+    "name": "wishmaker",
+    "version": "1.0.0",
+    "description": "A full-stack wish making application built with React, TypeScript, Node.js, Express, and PostgreSQL.",
+    "scripts": {
+        "docker:up": "docker-compose up -d --build",
+        "docker:down": "docker-compose down",
+        "docker:backend": "docker-compose up -d --build backend",
+        "docker:frontend": "docker-compose up -d --build frontend",
+        "docker:db": "docker-compose up -d db",
+        "docker:logs": "docker-compose logs -f",
+        "format": "npm run format --prefix frontend && npm run format --prefix backend",
+        "format:check": "npm run format:check --prefix frontend && npm run format:check --prefix backend",
+        "lint": "npm run lint --prefix frontend && npm run lint --prefix backend",
+        "lint:fix": "npm run lint:fix --prefix frontend && npm run lint:fix --prefix backend",
+        "pre-commit": "lint-staged",
+        "prepare": "husky"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/romcar/WishMaker.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/romcar/WishMaker/issues"
+    },
+    "homepage": "https://github.com/romcar/WishMaker#readme",
+    "devDependencies": {
+        "husky": "^9.1.7",
+        "lint-staged": "^16.2.6",
+        "prettier": "^3.6.2"
+    },
+    "lint-staged": {
+        "frontend/**/*.{js,jsx,ts,tsx}": [
+            "npm run lint:fix --prefix frontend",
+            "npm run format --prefix frontend"
+        ],
+        "backend/**/*.{js,ts}": [
+            "npm run lint:fix --prefix backend",
+            "npm run format --prefix backend"
+        ],
+        "*.{json,md,yml,yaml}": [
+            "prettier --write"
+        ]
+    }
 }
