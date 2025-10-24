@@ -199,6 +199,40 @@ CREATE TABLE wishes (
 
 ## Development
 
+### Code Quality
+
+The project uses automated code quality tools with pre-commit hooks:
+
+- **Husky**: Git hooks for code quality enforcement
+- **ESLint**: Linting with auto-fix for TypeScript/React
+- **Prettier**: Code formatting with 4-space indentation
+- **lint-staged**: Process only staged files for performance
+
+#### Pre-commit Hook
+
+Every commit automatically:
+1. Runs `eslint --fix` on staged TypeScript files
+2. Runs `prettier --write` on all staged files
+3. Ensures consistent code quality across the project
+
+See [docs/HUSKY_PRECOMMIT_SETUP.md](docs/HUSKY_PRECOMMIT_SETUP.md) for detailed configuration.
+
+#### Manual Code Quality Commands
+
+```bash
+# Format all code
+npm run format
+
+# Check formatting
+npm run format:check
+
+# Lint and fix issues  
+npm run lint:fix
+
+# Lint check only
+npm run lint
+```
+
 ### Backend Development
 
 ```bash
