@@ -23,17 +23,23 @@ services:
         # 4. Add SSL/TLS configuration variables
         # 5. Configure external service URLs (Redis, email, etc.)
         env_file:
-            - .env
+            - .env.local
         ports:
             - "8000:8000"
         depends_on:
             postgres:
                 condition: service_healthy
     frontend:
-        build: ./frontend
+        build:
+            context: ./frontend
+            args:
+                # Only non-sensitive build-time variables
+                PUBLIC_URL: /
+                REACT_APP_API_URL: http://localhost:8000
         container_name: wishmaker-frontend
         env_file:
-            - .env
+            - .env.local
+        # Sensitive data is provided via .env.local at runtime, not build-time
         ports:
             - "3000:3000"
         depends_on:
@@ -42,7 +48,7 @@ services:
         image: postgres:16-alpine
         container_name: wishmaker-db
         env_file:
-            - .env
+            - .env.local
         ports:
             - "5432:5432"
         volumes:

@@ -2,6 +2,8 @@
 node_modules/
 frontend/node_modules/
 backend/node_modules/
+frontend/package-lock.json
+backend/package-lock.json
 
 # Environment variables
 .env
@@ -9,6 +11,9 @@ backend/node_modules/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.supabase.local
+.env.build
+frontend/.env.build
 
 # Build output
 backend/dist/
