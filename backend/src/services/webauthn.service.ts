@@ -13,9 +13,13 @@
 // 9. Add enterprise features (attestation policies, etc.)
 // 10. Implement WebAuthn credential migration tools
 
-// Set up crypto polyfill for WebAuthn
+// Set up crypto polyfill for WebAuthn only if needed
 import { Crypto } from '@peculiar/webcrypto';
-global.crypto = new Crypto();
+
+// Only set up polyfill if crypto.subtle is not available
+if (!global.crypto || !global.crypto.subtle) {
+    global.crypto = new Crypto();
+}
 
 import type {
     GenerateRegistrationOptionsOpts,

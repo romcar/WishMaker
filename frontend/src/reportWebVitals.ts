@@ -9,8 +9,7 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
     // Hidden only in actual deployed production environments
     const isLocalEnvironment = isLocalHost();
 
-    const isDevelopment =
-        process.env.NODE_ENV === 'development' || isLocalEnvironment;
+    const isDevelopment = import.meta.env.DEV || isLocalEnvironment;
 
     if (!isDevelopment) {
         return;

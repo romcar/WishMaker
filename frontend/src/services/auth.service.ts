@@ -12,7 +12,7 @@ import {
     WebAuthnRegistrationRequest,
 } from '../types/auth.types';
 
-const API_BASE_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api/auth`;
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth`;
 
 // Mock user for demo mode
 export const mockDemoUser: User = {

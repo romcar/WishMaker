@@ -10,14 +10,12 @@
 // 8. Implement graceful shutdown handling
 // 9. Add API documentation with Swagger/OpenAPI
 // 10. Add environment-specific configurations
+import '@dotenvx/dotenvx/config';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import express, { Application } from 'express';
 import { AuthController } from './controllers/auth.controller';
 import authRoutes from './routes/auth.routes';
 import wishRoutes from './routes/wish.routes';
-
-dotenv.config();
 
 // Initialize AuthController with JWT secret
 AuthController.init();

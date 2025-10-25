@@ -1,5 +1,5 @@
-# Use the official Node.js 18 Alpine image
-FROM node:18-alpine
+# Use the official Node.js 20 Alpine image (required for Vite 7.1.12+)
+FROM node:20-alpine
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -13,15 +13,17 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Accept build arguments for React environment variables
-ARG PUBLIC_URL=/
-ARG REACT_APP_API_URL
-ARG REACT_APP_SITE_URL
+# Accept build arguments for Vite environment variables
+ARG VITE_API_URL
+ARG VITE_SITE_URL
+ARG VITE_GITHUB_PAGES
+ARG VITE_DEMO_MODE
 
 # Set environment variables for the build
-ENV PUBLIC_URL=$PUBLIC_URL
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
-ENV REACT_APP_SITE_URL=$REACT_APP_SITE_URL
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_SITE_URL=$VITE_SITE_URL
+ENV VITE_GITHUB_PAGES=$VITE_GITHUB_PAGES
+ENV VITE_DEMO_MODE=$VITE_DEMO_MODE
 
 # Build the React application
 RUN npm run build

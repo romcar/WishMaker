@@ -27,9 +27,12 @@
     },
     "homepage": "https://github.com/romcar/WishMaker#readme",
     "devDependencies": {
+        "eslint": "^9.38.0",
         "husky": "^9.1.7",
         "lint-staged": "^16.2.6",
-        "prettier": "^3.6.2"
+        "nodemon": "^3.1.10",
+        "prettier": "^3.6.2",
+        "ts-node": "^10.9.2"
     },
     "lint-staged": {
         "frontend/**/*.{js,jsx,ts,tsx}": [

@@ -33,10 +33,11 @@ services:
         build:
             context: ./frontend
             args:
-                # Build-time variables (required for React build)
-                PUBLIC_URL: /
-                REACT_APP_API_URL: http://localhost:8000
-                REACT_APP_SITE_URL: http://localhost:3000
+                # Build-time variables (required for Vite build)
+                VITE_API_URL: http://localhost:8000
+                VITE_SITE_URL: http://localhost:3000
+                VITE_GITHUB_PAGES: false
+                VITE_DEMO_MODE: false
         container_name: wishmaker-frontend
         env_file:
             - .env.local

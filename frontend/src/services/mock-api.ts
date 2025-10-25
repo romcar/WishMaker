@@ -3,9 +3,9 @@ import { CreateWishInput, UpdateWishInput, Wish } from '../types/wish.types';
 
 // Check if we're running in GitHub Pages mode (no backend available)
 const isGitHubPages =
-    process.env.NODE_ENV === 'production' &&
+    import.meta.env.MODE === 'production' &&
     (window.location.hostname === 'romcar.github.io' ||
-        process.env.REACT_APP_DEMO_MODE === 'true');
+        import.meta.env.VITE_DEMO_MODE === 'true');
 
 // Mock data for demo
 // Mock wishes data for GitHub Pages demo

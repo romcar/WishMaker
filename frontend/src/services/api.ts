@@ -4,9 +4,9 @@ import { TokenManager } from './auth.service';
 import { isGitHubPages, mockWishAPI } from './mock-api';
 
 // TODO: ENVIRONMENT - Move API URL to environment configuration file
-// Need to create .env file with REACT_APP_API_URL for production deployment
+// Need to create .env file with VITE_API_URL for production deployment
 // Currently defaults to localhost which won't work in production
-const API_BASE_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api`;
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api`;
 
 const api = axios.create({
     baseURL: API_BASE_URL,

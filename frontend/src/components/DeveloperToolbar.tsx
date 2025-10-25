@@ -40,13 +40,13 @@ const DeveloperToolbar: React.FC = () => {
         'vitals'
     );
     const [environmentInfo, setEnvironmentInfo] = useState<EnvironmentInfo>({
-        nodeEnv: process.env.NODE_ENV || 'unknown',
+        nodeEnv: import.meta.env.MODE || 'unknown',
         reactVersion: React.version,
         userAgent: navigator.userAgent,
         viewport: `${window.innerWidth}x${window.innerHeight}`,
         url: window.location.href,
         isGitHubPages: !!(
-            process.env.REACT_APP_GITHUB_PAGES === 'true' ||
+            import.meta.env.VITE_GITHUB_PAGES === 'true' ||
             window.location.hostname.endsWith('github.io')
         ),
     });
@@ -55,8 +55,7 @@ const DeveloperToolbar: React.FC = () => {
     // Hidden only in actual deployed production environments
     const isLocalEnvironment = isLocalHost();
 
-    const isDevelopment =
-        process.env.NODE_ENV === 'development' || isLocalEnvironment;
+    const isDevelopment = import.meta.env.DEV || isLocalEnvironment;
 
     useEffect(() => {
         if (!isDevelopment) {

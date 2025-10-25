@@ -1,7 +1,5 @@
-import dotenv from 'dotenv';
+import '@dotenvx/dotenvx/config';
 import { Pool } from 'pg';
-
-dotenv.config();
 
 // TODO: CRITICAL - Improve database configuration and security
 // 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-6/critical-fix-database-schema-security-issues
