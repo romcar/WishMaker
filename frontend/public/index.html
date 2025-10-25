@@ -26,26 +26,6 @@
     -->
         <title>WishMaker - Make Your Dreams Come True</title>
 
-        <!-- Load runtime env config (generated at container start) -->
-        <script src="%PUBLIC_URL%/env-config.js"></script>
-
-        <!-- Runtime env fetch: populates window._env_ before the app bundle runs -->
-        <script>
-            (function () {
-                try {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', '/env', false); // synchronous on purpose: run before bundle loads
-                    xhr.send(null);
-                    if (xhr.status === 200) {
-                        window._env_ = JSON.parse(xhr.responseText);
-                    } else {
-                        window._env_ = {};
-                    }
-                } catch (e) {
-                    window._env_ = {};
-                }
-            })();
-        </script>
 
         <!-- Start Single Page Apps for GitHub Pages -->
         <script type="text/javascript">
