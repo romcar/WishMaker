@@ -30,6 +30,7 @@ npm start
 ## Environment Detection Logic
 
 The developer toolbar only appears when:
+
 - `process.env.NODE_ENV === 'development'` OR
 - `window.location.hostname === 'localhost'` OR
 - `window.location.hostname === '127.0.0.1'`

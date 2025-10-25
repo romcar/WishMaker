@@ -8,16 +8,28 @@
 // 6. Add user preference settings (theme, notifications, etc.)
 // 7. Add privacy settings and data sharing preferences
 // 8. Add account verification and compliance fields
-// Authentication types for the frontend
+// Authentication types for the frontend (Supabase compatible)
 export interface User {
-    id: number;
+    id: string; // Supabase uses UUID strings
     email: string;
     firstName: string;
     lastName: string;
-    two_factor_enabled: boolean;
-    email_verified: boolean;
+    two_factor_enabled?: boolean;
+    email_verified?: boolean;
     created_at: string;
     last_login_at?: string;
+    avatar_url?: string;
+}
+
+// Supabase Profile interface (separate from User for database storage)
+export interface Profile {
+    id: string;
+    email: string;
+    first_name: string | null;
+    last_name: string | null;
+    avatar_url: string | null;
+    created_at: string;
+    updated_at: string;
 }
 
 // TODO: IMPROVEMENT - Enhance request interfaces
@@ -80,20 +92,20 @@ export interface PublicKeyCredentialCreationOptionsJSON {
     challenge: string;
     pubKeyCredParams: {
         alg: number;
-        type: "public-key";
+        type: 'public-key';
     }[];
     timeout?: number;
     excludeCredentials?: {
         id: string;
-        type: "public-key";
+        type: 'public-key';
         transports?: AuthenticatorTransport[];
     }[];
     authenticatorSelection?: {
-        authenticatorAttachment?: "platform" | "cross-platform";
-        userVerification?: "required" | "preferred" | "discouraged";
-        residentKey?: "discouraged" | "preferred" | "required";
+        authenticatorAttachment?: 'platform' | 'cross-platform';
+        userVerification?: 'required' | 'preferred' | 'discouraged';
+        residentKey?: 'discouraged' | 'preferred' | 'required';
     };
-    attestation?: "none" | "indirect" | "direct";
+    attestation?: 'none' | 'indirect' | 'direct';
 }
 
 export interface PublicKeyCredentialRequestOptionsJSON {
@@ -102,10 +114,10 @@ export interface PublicKeyCredentialRequestOptionsJSON {
     rpId?: string;
     allowCredentials?: {
         id: string;
-        type: "public-key";
+        type: 'public-key';
         transports?: AuthenticatorTransport[];
     }[];
-    userVerification?: "required" | "preferred" | "discouraged";
+    userVerification?: 'required' | 'preferred' | 'discouraged';
 }
 
 export interface AuthenticatorResponse {
@@ -121,19 +133,19 @@ export interface PublicKeyCredentialJSON {
     id: string;
     rawId: string;
     response: AuthenticatorResponse;
-    type: "public-key";
+    type: 'public-key';
     clientExtensionResults?: Record<string, any>;
 }
 
 export type AuthenticatorTransport =
-    | "ble"
-    | "hybrid"
-    | "internal"
-    | "nfc"
-    | "usb";
+    | 'ble'
+    | 'hybrid'
+    | 'internal'
+    | 'nfc'
+    | 'usb';
 
 export interface WebAuthnRegistrationRequest {
-    userId: number;
+    userId: string | number; // Support both string (Supabase) and number (legacy backend)
     deviceName?: string;
 }
 

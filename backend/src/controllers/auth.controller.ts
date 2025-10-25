@@ -1,27 +1,27 @@
 // Authentication Controller
 // Handles all authentication-related HTTP endpoints
 
-import bcrypt from "bcrypt";
-import crypto from "crypto";
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { RESERVED_USERNAMES } from "../constants/reserved-usernames";
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import { RESERVED_USERNAMES } from '../constants/reserved-usernames';
 import {
     AuthSessionModel,
     SecurityEventModel,
     UserModel,
     UserPreferencesModel,
     WebAuthnCredentialModel,
-} from "../models/auth.models";
-import { WebAuthnService } from "../services/webauthn.service";
+} from '../models/auth.models';
+import { WebAuthnService } from '../services/webauthn.service';
 import {
     LoginRequest,
     RegisterRequest,
     WebAuthnError,
     WebAuthnRegistrationRequest,
     WebAuthnVerificationRequest,
-} from "../types/auth.types";
-import { validateHighEntropySecret } from "../utils/entropy";
+} from '../types/auth.types';
+import { validateHighEntropySecret } from '../utils/entropy';
 
 export class AuthController {
     // JWT secret is initialized at application startup via init()
@@ -47,7 +47,7 @@ export class AuthController {
     public static init(): void {
         const secret = process.env.JWT_SECRET;
         if (!secret) {
-            throw new Error("JWT_SECRET environment variable must be set.");
+            throw new Error('JWT_SECRET environment variable must be set.');
         }
         try {
             // Validate secret entropy & length using shared utility
@@ -60,16 +60,16 @@ export class AuthController {
                 errMsg = String(err);
             }
             throw new Error(
-                "JWT_SECRET does not meet entropy requirements: " +
+                'JWT_SECRET does not meet entropy requirements: ' +
                     errMsg +
-                    ". Please set a strong, high-entropy secret (e.g., at least 32 random characters)."
+                    '. Please set a strong, high-entropy secret (e.g., at least 32 random characters).'
             );
         }
         AuthController.JWT_SECRET = secret;
     }
 
     private static readonly RATE_LIMIT_WINDOW = parseInt(
-        process.env.RATE_LIMIT_WINDOW_MS || "900000"
+        process.env.RATE_LIMIT_WINDOW_MS || '900000'
     ); // 15 minutes default
     private static readonly MAX_LOGIN_ATTEMPTS = 5;
 
@@ -92,7 +92,7 @@ export class AuthController {
                 res.status(400).json({
                     success: false,
                     message:
-                        "Username, first name, last name, email, and password are required",
+                        'Username, first name, last name, email, and password are required',
                 });
                 return;
             }
@@ -100,7 +100,7 @@ export class AuthController {
             if (password !== confirmPassword) {
                 res.status(400).json({
                     success: false,
-                    message: "Passwords do not match",
+                    message: 'Passwords do not match',
                 });
                 return;
             }
@@ -108,7 +108,7 @@ export class AuthController {
             if (password.length < 8) {
                 res.status(400).json({
                     success: false,
-                    message: "Password must be at least 8 characters long",
+                    message: 'Password must be at least 8 characters long',
                 });
                 return;
             }
@@ -118,7 +118,7 @@ export class AuthController {
             if (existingUser) {
                 res.status(409).json({
                     success: false,
-                    message: "User with this email already exists",
+                    message: 'User with this email already exists',
                 });
                 return;
             }
@@ -130,7 +130,7 @@ export class AuthController {
                 res.status(400).json({
                     success: false,
                     message:
-                        "Username must be 3-30 characters long and contain only letters, numbers, underscores, and hyphens",
+                        'Username must be 3-30 characters long and contain only letters, numbers, underscores, and hyphens',
                 });
                 return;
             }
@@ -139,7 +139,7 @@ export class AuthController {
             if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
                 res.status(400).json({
                     success: false,
-                    message: "This username is reserved and cannot be used",
+                    message: 'This username is reserved and cannot be used',
                 });
                 return;
             }
@@ -149,7 +149,7 @@ export class AuthController {
             if (existingUsername) {
                 res.status(409).json({
                     success: false,
-                    message: "Username is already taken",
+                    message: 'Username is already taken',
                 });
                 return;
             }
@@ -163,7 +163,7 @@ export class AuthController {
                 email,
                 password_hash: passwordHash,
                 display_name:
-                    `${firstName ?? ""} ${lastName ?? ""}`.trim() || username,
+                    `${firstName ?? ''} ${lastName ?? ''}`.trim() || username,
                 first_name: firstName,
                 last_name: lastName,
                 two_factor_enabled: false,
@@ -177,15 +177,15 @@ export class AuthController {
             // Log security event
             await SecurityEventModel.create({
                 user_id: user.id,
-                event_type: "user_registered",
+                event_type: 'user_registered',
                 ip_address: req.ip,
-                user_agent: req.get("User-Agent"),
+                user_agent: req.get('User-Agent'),
                 metadata: { firstName, lastName, username, email },
             });
 
             res.status(201).json({
                 success: true,
-                message: "User registered successfully",
+                message: 'User registered successfully',
                 user: {
                     id: user.id,
                     firstName,
@@ -196,10 +196,10 @@ export class AuthController {
                 },
             });
         } catch (error) {
-            console.error("Registration error:", error);
+            console.error('Registration error:', error);
             res.status(500).json({
                 success: false,
-                message: "Internal server error",
+                message: 'Internal server error',
             });
         }
     }
@@ -214,7 +214,7 @@ export class AuthController {
             if (!email || !password) {
                 res.status(400).json({
                     success: false,
-                    message: "Email and password are required",
+                    message: 'Email and password are required',
                 });
                 return;
             }
@@ -224,7 +224,7 @@ export class AuthController {
             if (!user) {
                 res.status(401).json({
                     success: false,
-                    message: "Invalid credentials",
+                    message: 'Invalid credentials',
                 });
                 return;
             }
@@ -237,7 +237,7 @@ export class AuthController {
                 res.status(423).json({
                     success: false,
                     message:
-                        "Account is temporarily locked due to too many failed login attempts",
+                        'Account is temporarily locked due to too many failed login attempts',
                 });
                 return;
             }
@@ -265,17 +265,17 @@ export class AuthController {
                 // Log security event
                 await SecurityEventModel.create({
                     user_id: user.id,
-                    event_type: "failed_login",
+                    event_type: 'failed_login',
                     ip_address: req.ip,
-                    user_agent: req.get("User-Agent"),
+                    user_agent: req.get('User-Agent'),
                     metadata: { failed_attempts: failedAttempts },
                 });
 
                 res.status(401).json({
                     success: false,
                     message: shouldLockAccount
-                        ? "Too many failed attempts. Account locked for 15 minutes."
-                        : "Invalid credentials",
+                        ? 'Too many failed attempts. Account locked for 15 minutes.'
+                        : 'Invalid credentials',
                 });
                 return;
             }
@@ -308,7 +308,7 @@ export class AuthController {
                     success: true,
                     require_2fa: true,
                     challenge: authOptions,
-                    message: "Password verified. Complete 2FA to continue.",
+                    message: 'Password verified. Complete 2FA to continue.',
                 });
                 return;
             }
@@ -316,9 +316,9 @@ export class AuthController {
             // Log successful login security event
             await SecurityEventModel.create({
                 user_id: user.id,
-                event_type: "login_success",
+                event_type: 'login_success',
                 ip_address: req.ip,
-                user_agent: req.get("User-Agent"),
+                user_agent: req.get('User-Agent'),
                 metadata: { email },
             });
 
@@ -336,7 +336,7 @@ export class AuthController {
             const lastName = user.last_name?.trim() || parsedName.lastName;
             res.json({
                 success: true,
-                message: "Login successful",
+                message: 'Login successful',
                 user: {
                     id: user.id,
                     email: user.email,
@@ -352,10 +352,10 @@ export class AuthController {
                 expires_in: sessionData.expires_in,
             });
         } catch (error) {
-            console.error("Login error:", error);
+            console.error('Login error:', error);
             res.status(500).json({
                 success: false,
-                message: "Internal server error",
+                message: 'Internal server error',
             });
         }
     }
@@ -373,7 +373,7 @@ export class AuthController {
             if (!userId) {
                 res.status(400).json({
                     success: false,
-                    message: "User ID is required",
+                    message: 'User ID is required',
                 });
                 return;
             }
@@ -383,7 +383,7 @@ export class AuthController {
             if (!user) {
                 res.status(404).json({
                     success: false,
-                    message: "User not found",
+                    message: 'User not found',
                 });
                 return;
             }
@@ -395,10 +395,10 @@ export class AuthController {
             res.json({
                 success: true,
                 options: registrationOptions,
-                message: "WebAuthn registration options generated",
+                message: 'WebAuthn registration options generated',
             });
         } catch (error) {
-            console.error("WebAuthn registration initiation error:", error);
+            console.error('WebAuthn registration initiation error:', error);
             if (error instanceof WebAuthnError) {
                 res.status(error.statusCode || 400).json({
                     success: false,
@@ -408,7 +408,7 @@ export class AuthController {
             } else {
                 res.status(500).json({
                     success: false,
-                    message: "Internal server error",
+                    message: 'Internal server error',
                 });
             }
         }
@@ -427,7 +427,7 @@ export class AuthController {
             if (!userId || !credential || !challenge) {
                 res.status(400).json({
                     success: false,
-                    message: "User ID, credential, or challenge are required",
+                    message: 'User ID, credential, or challenge are required',
                 });
                 return;
             }
@@ -449,24 +449,24 @@ export class AuthController {
                 // Log security event
                 await SecurityEventModel.create({
                     user_id: userId,
-                    event_type: "webauthn_credential_added",
+                    event_type: 'webauthn_credential_added',
                     ip_address: req.ip,
-                    user_agent: req.get("User-Agent"),
+                    user_agent: req.get('User-Agent'),
                     metadata: { device_name: deviceName },
                 });
 
                 res.json({
                     success: true,
-                    message: "WebAuthn credential registered successfully",
+                    message: 'WebAuthn credential registered successfully',
                 });
             } else {
                 res.status(400).json({
                     success: false,
-                    message: "WebAuthn registration verification failed",
+                    message: 'WebAuthn registration verification failed',
                 });
             }
         } catch (error) {
-            console.error("WebAuthn registration completion error:", error);
+            console.error('WebAuthn registration completion error:', error);
             if (error instanceof WebAuthnError) {
                 res.status(error.statusCode || 400).json({
                     success: false,
@@ -476,7 +476,7 @@ export class AuthController {
             } else {
                 res.status(500).json({
                     success: false,
-                    message: "Internal server error",
+                    message: 'Internal server error',
                 });
             }
         }
@@ -493,7 +493,7 @@ export class AuthController {
             if (!credential || !challenge) {
                 res.status(400).json({
                     success: false,
-                    message: "Credential and challenge are required",
+                    message: 'Credential and challenge are required',
                 });
                 return;
             }
@@ -510,7 +510,7 @@ export class AuthController {
                 if (!user) {
                     res.status(404).json({
                         success: false,
-                        message: "User not found",
+                        message: 'User not found',
                     });
                     return;
                 }
@@ -524,15 +524,15 @@ export class AuthController {
                 // Log security event
                 await SecurityEventModel.create({
                     user_id: result.userId,
-                    event_type: "webauthn_login_success",
+                    event_type: 'webauthn_login_success',
                     ip_address: req.ip,
-                    user_agent: req.get("User-Agent"),
+                    user_agent: req.get('User-Agent'),
                     metadata: { credential_id: result.credentialId },
                 });
 
                 res.json({
                     success: true,
-                    message: "2FA verification successful",
+                    message: '2FA verification successful',
                     user: {
                         id: user.id,
                         username: user.username,
@@ -545,19 +545,19 @@ export class AuthController {
                 // Log failed 2FA attempt
                 await SecurityEventModel.create({
                     user_id: undefined,
-                    event_type: "webauthn_login_failed",
+                    event_type: 'webauthn_login_failed',
                     ip_address: req.ip,
-                    user_agent: req.get("User-Agent"),
+                    user_agent: req.get('User-Agent'),
                     metadata: { challenge },
                 });
 
                 res.status(401).json({
                     success: false,
-                    message: "2FA verification failed",
+                    message: '2FA verification failed',
                 });
             }
         } catch (error) {
-            console.error("WebAuthn verification error:", error);
+            console.error('WebAuthn verification error:', error);
             if (error instanceof WebAuthnError) {
                 res.status(error.statusCode || 400).json({
                     success: false,
@@ -567,7 +567,7 @@ export class AuthController {
             } else {
                 res.status(500).json({
                     success: false,
-                    message: "Internal server error",
+                    message: 'Internal server error',
                 });
             }
         }
@@ -590,9 +590,7 @@ export class AuthController {
 
         const sessionToken = jwt.sign(payload, AuthController.JWT_SECRET);
         // Use cryptographically secure random bytes for refresh token
-        const refreshToken = `refresh_${crypto
-            .randomBytes(32)
-            .toString("hex")}`;
+        const refreshToken = `refresh_${crypto.randomBytes(32).toString('hex')}`;
 
         // Store session in database
         await AuthSessionModel.create({
@@ -601,7 +599,7 @@ export class AuthController {
             refresh_token_hash: await bcrypt.hash(refreshToken, 10),
             device_fingerprint: AuthController.generateDeviceFingerprint(req),
             ip_address: req.ip,
-            user_agent: req.get("User-Agent"),
+            user_agent: req.get('User-Agent'),
             expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
             is_active: true,
         });
@@ -618,19 +616,19 @@ export class AuthController {
      * Creates a secure fingerprint from browser characteristics
      */
     private static generateDeviceFingerprint(req: Request): string {
-        const userAgent = req.get("User-Agent") || "";
-        const acceptLanguage = req.get("Accept-Language") || "";
-        const acceptEncoding = req.get("Accept-Encoding") || "";
+        const userAgent = req.get('User-Agent') || '';
+        const acceptLanguage = req.get('Accept-Language') || '';
+        const acceptEncoding = req.get('Accept-Encoding') || '';
         // Removed Accept-Charset and DNT as they are unreliable/deprecated
         // Add more reliable signals if available from client (custom headers)
-        const screenResolution = req.get("x-screen-resolution") || "";
-        const timezoneOffset = req.get("x-timezone-offset") || "";
+        const screenResolution = req.get('x-screen-resolution') || '';
+        const timezoneOffset = req.get('x-timezone-offset') || '';
 
         // Include more headers for better uniqueness while maintaining privacy
         const fingerprint = `${userAgent}|${acceptLanguage}|${acceptEncoding}|${screenResolution}|${timezoneOffset}`;
 
         // Use SHA-256 hash instead of weak base64 encoding + truncation
-        return crypto.createHash("sha256").update(fingerprint).digest("hex");
+        return crypto.createHash('sha256').update(fingerprint).digest('hex');
     }
 
     /**
@@ -643,45 +641,46 @@ export class AuthController {
         displayName?: string | null,
         username?: string | null
     ): { firstName: string; lastName: string } {
-        const safe = (s?: string | null) => (s || "").trim();
+        const safe = (s?: string | null) => (s || '').trim();
         const name = safe(displayName);
         const user = safe(username);
 
         if (name) {
             // Handle "Last, First" (e.g., "Doe, John")
-            if (name.includes(",")) {
+            if (name.includes(',')) {
                 const parts = name
-                    .split(",")
-                    .map((p) => p.trim())
+                    .split(',')
+                    .map(p => p.trim())
                     .filter(Boolean);
-                const last = parts[0] || "";
-                const first = parts[1] || parts[0] || "";
+                const last = parts[0] || '';
+                const first = parts[1] || parts[0] || '';
                 return { firstName: first, lastName: last };
             }
 
             // Split by whitespace. First token -> firstName, remainder -> lastName
             const parts = name.split(/\s+/).filter(Boolean);
             if (parts.length === 1) {
-                return { firstName: parts[0], lastName: "" };
+                return { firstName: parts[0], lastName: '' };
             }
-            return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
+            return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
         }
 
         // No display name: try to infer from username (e.g., "john.doe" => firstName: john, lastName: doe)
         if (user) {
-            if (user.includes(".")) {
-                const parts = user.split(".").filter(Boolean);
-                if (parts.length === 1)
-                    return { firstName: parts[0], lastName: "" };
+            if (user.includes('.')) {
+                const parts = user.split('.').filter(Boolean);
+                if (parts.length === 1) {
+                    return { firstName: parts[0], lastName: '' };
+                }
                 return {
                     firstName: parts[0],
-                    lastName: parts.slice(1).join(" "),
+                    lastName: parts.slice(1).join(' '),
                 };
             }
             // Fallback: use entire username as firstName
-            return { firstName: user, lastName: "" };
+            return { firstName: user, lastName: '' };
         }
 
-        return { firstName: "", lastName: "" };
+        return { firstName: '', lastName: '' };
     }
 }

@@ -4,8 +4,9 @@ import React, {
     useContext,
     useEffect,
     useReducer,
-} from "react";
-import { AuthService } from "../services/auth.service";
+} from 'react';
+import { AuthService, mockDemoUser } from '../services/auth.service';
+import { isGitHubPages } from '../services/mock-api';
 import {
     AuthContextType,
     AuthState,
@@ -16,9 +17,7 @@ import {
     RegisterRequest,
     RegistrationResponse,
     User,
-} from "../types/auth.types";
-import { isGitHubPages } from "../services/mock-api";
-import { mockDemoUser } from "../services/auth.service";
+} from '../types/auth.types';
 
 // TODO: ENHANCEMENT - Improve AuthContext functionality
 // 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-8/implement-complete-authentication-system
@@ -49,35 +48,35 @@ const initialState: AuthState = {
 
 // Action types
 type AuthAction =
-    | { type: "SET_LOADING"; payload: boolean }
-    | { type: "SET_ERROR"; payload: string | null }
+    | { type: 'SET_LOADING'; payload: boolean }
+    | { type: 'SET_ERROR'; payload: string | null }
     | {
-          type: "LOGIN_SUCCESS";
+          type: 'LOGIN_SUCCESS';
           payload: { user: User; token: string; refreshToken?: string };
       }
-    | { type: "LOGOUT" }
-    | { type: "CLEAR_ERROR" }
+    | { type: 'LOGOUT' }
+    | { type: 'CLEAR_ERROR' }
     | {
-          type: "REFRESH_SUCCESS";
+          type: 'REFRESH_SUCCESS';
           payload: { user: User; token: string; refreshToken?: string };
       };
 
 // Reducer
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     switch (action.type) {
-        case "SET_LOADING":
+        case 'SET_LOADING':
             return {
                 ...state,
                 isLoading: action.payload,
             };
-        case "SET_ERROR":
+        case 'SET_ERROR':
             return {
                 ...state,
                 error: action.payload,
                 isLoading: false,
             };
-        case "LOGIN_SUCCESS":
-        case "REFRESH_SUCCESS":
+        case 'LOGIN_SUCCESS':
+        case 'REFRESH_SUCCESS':
             return {
                 ...state,
                 user: action.payload.user,
@@ -87,12 +86,12 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
                 isLoading: false,
                 error: null,
             };
-        case "LOGOUT":
+        case 'LOGOUT':
             return {
                 ...initialState,
                 isLoading: false,
             };
-        case "CLEAR_ERROR":
+        case 'CLEAR_ERROR':
             return {
                 ...state,
                 error: null,
@@ -117,19 +116,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
-                dispatch({ type: "SET_LOADING", payload: true });
+                dispatch({ type: 'SET_LOADING', payload: true });
 
                 // In GitHub Pages demo mode, automatically "log in" demo user
                 if (isGitHubPages) {
                     dispatch({
-                        type: "LOGIN_SUCCESS",
+                        type: 'LOGIN_SUCCESS',
                         payload: {
                             user: mockDemoUser,
-                            token: "demo-token",
-                            refreshToken: "demo-refresh-token",
+                            token: 'demo-token',
+                            refreshToken: 'demo-refresh-token',
                         },
                     });
-                    dispatch({ type: "SET_LOADING", payload: false });
+                    dispatch({ type: 'SET_LOADING', payload: false });
                     return;
                 }
 
@@ -141,7 +140,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     authState.token
                 ) {
                     dispatch({
-                        type: "LOGIN_SUCCESS",
+                        type: 'LOGIN_SUCCESS',
                         payload: {
                             user: authState.user,
                             token: authState.token,
@@ -153,7 +152,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     const newSession = await AuthService.refreshToken();
                     if (newSession) {
                         dispatch({
-                            type: "REFRESH_SUCCESS",
+                            type: 'REFRESH_SUCCESS',
                             payload: {
                                 user: newSession.user,
                                 token: newSession.token,
@@ -161,14 +160,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                             },
                         });
                     } else {
-                        dispatch({ type: "LOGOUT" });
+                        dispatch({ type: 'LOGOUT' });
                     }
                 } else {
-                    dispatch({ type: "SET_LOADING", payload: false });
+                    dispatch({ type: 'SET_LOADING', payload: false });
                 }
             } catch (error) {
-                console.error("Auth initialization error:", error);
-                dispatch({ type: "LOGOUT" });
+                console.error('Auth initialization error:', error);
+                dispatch({ type: 'LOGOUT' });
             }
         };
 
@@ -178,8 +177,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Login function
     const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
         try {
-            dispatch({ type: "SET_LOADING", payload: true });
-            dispatch({ type: "CLEAR_ERROR" });
+            dispatch({ type: 'SET_LOADING', payload: true });
+            dispatch({ type: 'CLEAR_ERROR' });
 
             const response = await AuthService.login(credentials);
 
@@ -187,7 +186,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 // Direct login success (no 2FA required)
                 if (response.user && response.session_token) {
                     dispatch({
-                        type: "LOGIN_SUCCESS",
+                        type: 'LOGIN_SUCCESS',
                         payload: {
                             user: response.user,
                             token: response.session_token,
@@ -197,13 +196,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 }
             } else {
                 // 2FA required or login pending
-                dispatch({ type: "SET_LOADING", payload: false });
+                dispatch({ type: 'SET_LOADING', payload: false });
             }
 
             return response;
         } catch (error: any) {
-            const errorMessage = error.message || "Login failed";
-            dispatch({ type: "SET_ERROR", payload: errorMessage });
+            const errorMessage = error.message || 'Login failed';
+            dispatch({ type: 'SET_ERROR', payload: errorMessage });
             throw new Error(errorMessage);
         }
     };
@@ -213,18 +212,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         userData: RegisterRequest
     ): Promise<RegistrationResponse> => {
         try {
-            dispatch({ type: "SET_LOADING", payload: true });
-            dispatch({ type: "CLEAR_ERROR" });
+            dispatch({ type: 'SET_LOADING', payload: true });
+            dispatch({ type: 'CLEAR_ERROR' });
 
             const response = await AuthService.register(userData);
 
             // Registration doesn't automatically log in
-            dispatch({ type: "SET_LOADING", payload: false });
+            dispatch({ type: 'SET_LOADING', payload: false });
 
             return response;
         } catch (error: any) {
-            const errorMessage = error.message || "Registration failed";
-            dispatch({ type: "SET_ERROR", payload: errorMessage });
+            const errorMessage = error.message || 'Registration failed';
+            dispatch({ type: 'SET_ERROR', payload: errorMessage });
             throw new Error(errorMessage);
         }
     };
@@ -235,8 +234,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         challenge: string
     ): Promise<boolean> => {
         try {
-            dispatch({ type: "SET_LOADING", payload: true });
-            dispatch({ type: "CLEAR_ERROR" });
+            dispatch({ type: 'SET_LOADING', payload: true });
+            dispatch({ type: 'CLEAR_ERROR' });
 
             const session = await AuthService.verifyWebAuthn(
                 credential,
@@ -244,7 +243,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             );
 
             dispatch({
-                type: "LOGIN_SUCCESS",
+                type: 'LOGIN_SUCCESS',
                 payload: {
                     user: session.user,
                     token: session.token,
@@ -255,8 +254,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return true;
         } catch (error: any) {
             const errorMessage =
-                error.message || "WebAuthn verification failed";
-            dispatch({ type: "SET_ERROR", payload: errorMessage });
+                error.message || 'WebAuthn verification failed';
+            dispatch({ type: 'SET_ERROR', payload: errorMessage });
             throw new Error(errorMessage);
         }
     };
@@ -266,10 +265,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         deviceName?: string
     ): Promise<PublicKeyCredentialCreationOptionsJSON> => {
         try {
-            dispatch({ type: "CLEAR_ERROR" });
+            dispatch({ type: 'CLEAR_ERROR' });
 
             if (!state.user) {
-                throw new Error("User not authenticated");
+                throw new Error('User not authenticated');
             }
 
             return await AuthService.initiateWebAuthnRegistration({
@@ -277,8 +276,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 deviceName,
             });
         } catch (error: any) {
-            const errorMessage = error.message || "WebAuthn setup failed";
-            dispatch({ type: "SET_ERROR", payload: errorMessage });
+            const errorMessage = error.message || 'WebAuthn setup failed';
+            dispatch({ type: 'SET_ERROR', payload: errorMessage });
             throw new Error(errorMessage);
         }
     };
@@ -291,15 +290,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 await AuthService.logout();
             }
         } catch (error) {
-            console.error("Logout error:", error);
+            console.error('Logout error:', error);
         } finally {
-            dispatch({ type: "LOGOUT" });
+            dispatch({ type: 'LOGOUT' });
         }
     };
 
     // Clear error function
     const clearError = (): void => {
-        dispatch({ type: "CLEAR_ERROR" });
+        dispatch({ type: 'CLEAR_ERROR' });
     };
 
     // Refresh session function
@@ -309,7 +308,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             if (newSession) {
                 dispatch({
-                    type: "REFRESH_SUCCESS",
+                    type: 'REFRESH_SUCCESS',
                     payload: {
                         user: newSession.user,
                         token: newSession.token,
@@ -321,8 +320,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             return false;
         } catch (error) {
-            console.error("Session refresh error:", error);
-            dispatch({ type: "LOGOUT" });
+            console.error('Session refresh error:', error);
+            dispatch({ type: 'LOGOUT' });
             return false;
         }
     };
@@ -350,7 +349,7 @@ export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
 
     if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider");
+        throw new Error('useAuth must be used within an AuthProvider');
     }
 
     return context;

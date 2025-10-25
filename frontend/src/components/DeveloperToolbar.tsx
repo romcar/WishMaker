@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Metric } from "web-vitals";
-import { isLocalHost } from "../utils/isLocalHost";
+import React, { useEffect, useState } from 'react';
+import { Metric } from 'web-vitals';
+import { isLocalHost } from '../utils/isLocalHost';
 import {
     getWebVitalsRating,
     type WebVitalsRating,
-} from "../utils/webVitalsRating";
-import "./DeveloperToolbar.css";
+} from '../utils/webVitalsRating';
+import './DeveloperToolbar.css';
 
 interface WebVitalsMetric {
     name: string;
@@ -20,20 +20,40 @@ interface EnvironmentInfo {
     userAgent: string;
     viewport: string;
     url: string;
+    isGitHubPages?: boolean;
+    isSupabaseActive?: boolean;
 }
+
+const DevEnvInfoItem: React.FC<{ label: string; value: string }> = ({
+    label,
+    value,
+}) => (
+    <div className="dev-env-item">
+        <span className="dev-env-label">{label}:</span>
+        <span className="dev-env-value">{value}</span>
+    </div>
+);
 
 const DeveloperToolbar: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [metrics, setMetrics] = useState<WebVitalsMetric[]>([]);
-    const [activeTab, setActiveTab] = useState<"vitals" | "environment">(
-        "vitals"
+    const [activeTab, setActiveTab] = useState<'vitals' | 'environment'>(
+        'vitals'
     );
     const [environmentInfo, setEnvironmentInfo] = useState<EnvironmentInfo>({
-        nodeEnv: process.env.NODE_ENV || "unknown",
+        nodeEnv: process.env.NODE_ENV || 'unknown',
         reactVersion: React.version,
         userAgent: navigator.userAgent,
         viewport: `${window.innerWidth}x${window.innerHeight}`,
         url: window.location.href,
+        isGitHubPages: !!(
+            process.env.REACT_APP_GITHUB_PAGES === 'true' ||
+            window.location.hostname.endsWith('github.io')
+        ),
+        isSupabaseActive: !!(
+            process.env.REACT_APP_SUPABASE_URL &&
+            process.env.REACT_APP_SUPABASE_ANON_KEY
+        ),
     });
 
     // Show in development OR when testing locally (even production builds)
@@ -41,25 +61,29 @@ const DeveloperToolbar: React.FC = () => {
     const isLocalEnvironment = isLocalHost();
 
     const isDevelopment =
-        process.env.NODE_ENV === "development" || isLocalEnvironment;
+        process.env.NODE_ENV === 'development' || isLocalEnvironment;
 
     useEffect(() => {
-        if (!isDevelopment) return;
+        if (!isDevelopment) {
+            return;
+        }
 
         // Update viewport on resize
         const handleResize = () => {
-            setEnvironmentInfo((prev) => ({
+            setEnvironmentInfo(prev => ({
                 ...prev,
                 viewport: `${window.innerWidth}x${window.innerHeight}`,
             }));
         };
 
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, [isDevelopment]);
 
     useEffect(() => {
-        if (!isDevelopment) return;
+        if (!isDevelopment) {
+            return;
+        }
 
         const handleWebVitals = (metric: Metric) => {
             const newMetric: WebVitalsMetric = {
@@ -69,14 +93,14 @@ const DeveloperToolbar: React.FC = () => {
                 timestamp: new Date().toLocaleTimeString(),
             };
 
-            setMetrics((prev) => {
-                const filtered = prev.filter((m) => m.name !== metric.name);
+            setMetrics(prev => {
+                const filtered = prev.filter(m => m.name !== metric.name);
                 return [...filtered, newMetric];
             });
         };
 
         // Load web vitals
-        import("web-vitals").then(
+        import('web-vitals').then(
             ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
                 getCLS(handleWebVitals);
                 getFID(handleWebVitals);
@@ -94,14 +118,14 @@ const DeveloperToolbar: React.FC = () => {
 
     const getRatingEmoji = (rating: string) => {
         switch (rating) {
-            case "good":
-                return "🟢";
-            case "needs-improvement":
-                return "🟡";
-            case "poor":
-                return "🔴";
+            case 'good':
+                return '🟢';
+            case 'needs-improvement':
+                return '🟡';
+            case 'poor':
+                return '🔴';
             default:
-                return "⚪";
+                return '⚪';
         }
     };
 
@@ -124,18 +148,14 @@ const DeveloperToolbar: React.FC = () => {
             <div className="dev-toolbar-header">
                 <div className="dev-toolbar-tabs">
                     <button
-                        className={`dev-toolbar-tab ${
-                            activeTab === "vitals" ? "active" : ""
-                        }`}
-                        onClick={() => setActiveTab("vitals")}
+                        className={`dev-toolbar-tab ${activeTab === 'vitals' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('vitals')}
                     >
                         📊 Web Vitals ({metrics.length})
                     </button>
                     <button
-                        className={`dev-toolbar-tab ${
-                            activeTab === "environment" ? "active" : ""
-                        }`}
-                        onClick={() => setActiveTab("environment")}
+                        className={`dev-toolbar-tab ${activeTab === 'environment' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('environment')}
                     >
                         🔧 Environment
                     </button>
@@ -159,7 +179,7 @@ const DeveloperToolbar: React.FC = () => {
             </div>
 
             <div className="dev-toolbar-content">
-                {activeTab === "vitals" && (
+                {activeTab === 'vitals' && (
                     <div className="dev-toolbar-panel">
                         {metrics.length === 0 ? (
                             <div className="dev-toolbar-empty">
@@ -168,7 +188,7 @@ const DeveloperToolbar: React.FC = () => {
                             </div>
                         ) : (
                             <div className="dev-vitals-grid">
-                                {metrics.map((metric) => (
+                                {metrics.map(metric => (
                                     <div
                                         key={`${metric.name}_${metric.timestamp}`}
                                         className="dev-vitals-card"
@@ -184,9 +204,9 @@ const DeveloperToolbar: React.FC = () => {
                                                 className={`dev-vitals-value ${metric.rating}`}
                                             >
                                                 {metric.value}
-                                                {metric.name === "CLS"
-                                                    ? ""
-                                                    : "ms"}
+                                                {metric.name === 'CLS'
+                                                    ? ''
+                                                    : 'ms'}
                                             </span>
                                         </div>
                                         <div className="dev-vitals-timestamp">
@@ -199,45 +219,18 @@ const DeveloperToolbar: React.FC = () => {
                     </div>
                 )}
 
-                {activeTab === "environment" && (
+                {activeTab === 'environment' && (
                     <div className="dev-toolbar-panel">
                         <div className="dev-env-grid">
-                            <div className="dev-env-item">
-                                <span className="dev-env-label">
-                                    Environment:
-                                </span>
-                                <span className="dev-env-value">
-                                    {environmentInfo.nodeEnv}
-                                </span>
-                            </div>
-                            <div className="dev-env-item">
-                                <span className="dev-env-label">
-                                    React Version:
-                                </span>
-                                <span className="dev-env-value">
-                                    {environmentInfo.reactVersion}
-                                </span>
-                            </div>
-                            <div className="dev-env-item">
-                                <span className="dev-env-label">Viewport:</span>
-                                <span className="dev-env-value">
-                                    {environmentInfo.viewport}
-                                </span>
-                            </div>
-                            <div className="dev-env-item">
-                                <span className="dev-env-label">URL:</span>
-                                <span className="dev-env-value dev-env-url">
-                                    {environmentInfo.url}
-                                </span>
-                            </div>
-                            <div className="dev-env-item">
-                                <span className="dev-env-label">
-                                    User Agent:
-                                </span>
-                                <span className="dev-env-value dev-env-ua">
-                                    {environmentInfo.userAgent}
-                                </span>
-                            </div>
+                            {Object.entries(environmentInfo).map(
+                                ([key, value]) => (
+                                    <DevEnvInfoItem
+                                        key={key}
+                                        label={key}
+                                        value={value}
+                                    />
+                                )
+                            )}
                         </div>
                     </div>
                 )}

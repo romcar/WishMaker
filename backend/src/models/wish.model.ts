@@ -5,7 +5,7 @@ export interface Wish {
     user_id: number;
     created_at: Date;
     updated_at: Date;
-    status: "pending" | "fulfilled" | "cancelled";
+    status: 'pending' | 'fulfilled' | 'cancelled';
 }
 
 export interface CreateWishInput {
@@ -17,5 +17,5 @@ export interface CreateWishInput {
 export interface UpdateWishInput {
     title?: string;
     description?: string;
-    status?: "pending" | "fulfilled" | "cancelled";
+    status?: 'pending' | 'fulfilled' | 'cancelled';
 }

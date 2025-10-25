@@ -5,10 +5,10 @@
  * following Core Web Vitals guidelines and web-vitals v2 compatibility.
  */
 
-export type WebVitalsRating = "good" | "needs-improvement" | "poor";
+export type WebVitalsRating = 'good' | 'needs-improvement' | 'poor';
 
 // Add explicit union type for metric names for compile-time safety
-export type WebVitalName = "CLS" | "FID" | "FCP" | "LCP" | "TTFB" | "INP";
+export type WebVitalName = 'CLS' | 'FID' | 'FCP' | 'LCP' | 'TTFB' | 'INP';
 
 /**
  * Determines the rating for a Web Vitals metric based on Core Web Vitals thresholds.
@@ -32,18 +32,18 @@ export const getWebVitalsRating = (
         throw new Error(
             `Unknown Web Vitals metric name: ${name}. Valid names are: ${Object.keys(
                 WEB_VITALS_THRESHOLDS
-            ).join(", ")}`
+            ).join(', ')}`
         );
     }
     if (value < thresholds.good) {
-        return "good";
+        return 'good';
     }
 
     if (value < thresholds.poor) {
-        return "needs-improvement";
+        return 'needs-improvement';
     }
 
-    return "poor";
+    return 'poor';
 };
 
 /**

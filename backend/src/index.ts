@@ -10,12 +10,12 @@
 // 8. Implement graceful shutdown handling
 // 9. Add API documentation with Swagger/OpenAPI
 // 10. Add environment-specific configurations
-import cors from "cors";
-import dotenv from "dotenv";
-import express, { Application } from "express";
-import { AuthController } from "./controllers/auth.controller";
-import authRoutes from "./routes/auth.routes";
-import wishRoutes from "./routes/wish.routes";
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express, { Application } from 'express';
+import { AuthController } from './controllers/auth.controller';
+import authRoutes from './routes/auth.routes';
+import wishRoutes from './routes/wish.routes';
 
 dotenv.config();
 
@@ -35,19 +35,19 @@ const PORT = process.env.PORT || 3000;
 
 // CORS Configuration
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
-    credentials: process.env.CORS_CREDENTIALS === "true" || true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    credentials: process.env.CORS_CREDENTIALS === 'true' || true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 // Middleware
 app.use(cors(corsOptions));
-app.use(express.json({ limit: process.env.REQUEST_SIZE_LIMIT || "10mb" })); // Configurable limit for WebAuthn responses
+app.use(express.json({ limit: process.env.REQUEST_SIZE_LIMIT || '10mb' })); // Configurable limit for WebAuthn responses
 app.use(
     express.urlencoded({
         extended: true,
-        limit: process.env.REQUEST_SIZE_LIMIT || "10mb",
+        limit: process.env.REQUEST_SIZE_LIMIT || '10mb',
     })
 );
 
@@ -62,20 +62,20 @@ app.use(
 // 7. Add IP filtering and geolocation restrictions
 // Security headers
 app.use((req, res, next) => {
-    res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("X-Frame-Options", "DENY");
-    res.setHeader("X-XSS-Protection", "1; mode=block");
-    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     next();
 });
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api", wishRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api', wishRoutes);
 
 // Health check
-app.get("/health", (req, res) => {
-    res.json({ status: "OK", message: "WishMaker API is running" });
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK', message: 'WishMaker API is running' });
 });
 
 // Start server

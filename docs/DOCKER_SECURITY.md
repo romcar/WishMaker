@@ -8,14 +8,14 @@ The Docker linter correctly identified that sensitive data should not be used in
 ### Solution Implemented
 
 #### 1. **Dockerfile Changes**
-- Removed sensitive environment variables from ARG/ENV instructions
-- Only kept non-sensitive build variables (PUBLIC_URL, REACT_APP_API_URL)
-- Added security comments explaining best practices
+- Added comprehensive security comments explaining best practices
+- Distinguished between truly sensitive data and client-side keys
+- Maintained React build functionality while documenting security approach
 
 #### 2. **Docker Compose Changes**
-- Removed sensitive data from build args
-- Kept sensitive data in runtime environment variables via `.env.local`
-- Added comments explaining the security approach
+- Kept environment variables in build args (required for React builds)
+- Added detailed comments explaining Supabase security model
+- Maintained clean separation of concerns
 
 #### 3. **Supabase Anon Key Considerations**
 **Important**: Supabase anon keys are designed to be client-side public keys:
@@ -59,7 +59,18 @@ For local development, the current approach with `.env.local` is acceptable beca
 - It's only for local development
 - Supabase anon keys are designed to be client-side
 
-### Security Status: ✅ RESOLVED
-- Sensitive data removed from Docker image layers
+#### 6. **Security Clarification**
+**Updated Approach**: After initial implementation, we restored Supabase environment variables to build args because:
+
+1. **React Requirement**: React apps need environment variables at **build time** to embed in static bundles
+2. **Supabase Design**: Anon keys are specifically designed to be client-side and public
+3. **Security Model**: Protection comes from RLS policies, not hiding the anon key
+4. **Best Practice**: Proper documentation and comments explain the security model
+
+**Key Point**: The Docker linter warning applies to truly sensitive data (passwords, private keys, etc.), not client-side API keys that are designed to be public.
+
+### Security Status: ✅ RESOLVED WITH CLARIFICATION
+- Proper distinction between sensitive and client-side data
+- Comprehensive documentation of security model
+- React build functionality restored
 - Production-ready architecture documented
-- Local development remains functional

@@ -14,12 +14,12 @@
  * - "usb":   USB — external authenticators connected over USB (including USB-C / USB-A keys).
  */
 export type AuthenticatorTransport =
-    | "ble" // Bluetooth Low Energy
-    | "hybrid"
-    | "internal"
-    | "nfc"
-    | "usb"
-    | "smart-card";
+    | 'ble' // Bluetooth Low Energy
+    | 'hybrid'
+    | 'internal'
+    | 'nfc'
+    | 'usb'
+    | 'smart-card';
 
 export interface User {
     id: number;
@@ -64,11 +64,11 @@ export interface WebAuthnCredential {
     credential_id: string; // Base64URL encoded
     public_key: Buffer; // Raw public key bytes
     counter: bigint; // Signature counter for replay protection
-    device_type: "platform" | "cross-platform"; // Biometric vs USB key
+    device_type: 'platform' | 'cross-platform'; // Biometric vs USB key
     transports: AuthenticatorTransport[]; // usb, nfc, ble, internal
     backup_eligible: boolean; // Can be backed up across devices
     backup_state: boolean; // Currently backed up
-    attestation_type: "none" | "basic" | "self" | "attca";
+    attestation_type: 'none' | 'basic' | 'self' | 'attca';
     aaguid?: string; // Authenticator Attestation GUID
     device_name?: string; // User-friendly name
     is_active: boolean;
@@ -104,7 +104,7 @@ export interface AuthChallenge {
     id: number;
     challenge: string; // Base64URL encoded challenge
     user_id?: number;
-    challenge_type: "registration" | "authentication";
+    challenge_type: 'registration' | 'authentication';
     origin: string;
     expires_at: Date;
     used: boolean;
@@ -122,23 +122,23 @@ export interface SecurityEvent {
 }
 
 export type SecurityEventType =
-    | "login_success"
-    | "login_failed"
-    | "login_locked"
-    | "failed_login"
-    | "user_registered"
-    | "password_changed"
-    | "2fa_enabled"
-    | "2fa_disabled"
-    | "webauthn_registered"
-    | "webauthn_credential_added"
-    | "webauthn_used"
-    | "webauthn_login_success"
-    | "webauthn_login_failed"
-    | "recovery_code_used"
-    | "account_created"
-    | "account_deleted"
-    | "suspicious_activity";
+    | 'login_success'
+    | 'login_failed'
+    | 'login_locked'
+    | 'failed_login'
+    | 'user_registered'
+    | 'password_changed'
+    | '2fa_enabled'
+    | '2fa_disabled'
+    | 'webauthn_registered'
+    | 'webauthn_credential_added'
+    | 'webauthn_used'
+    | 'webauthn_login_success'
+    | 'webauthn_login_failed'
+    | 'recovery_code_used'
+    | 'account_created'
+    | 'account_deleted'
+    | 'suspicious_activity';
 
 export interface UserPreferences {
     id: number;
@@ -167,20 +167,20 @@ export interface PublicKeyCredentialCreationOptionsJSON {
     challenge: string; // Base64URL encoded challenge
     pubKeyCredParams: {
         alg: number;
-        type: "public-key";
+        type: 'public-key';
     }[];
     timeout?: number;
     excludeCredentials?: {
         id: string;
-        type: "public-key";
+        type: 'public-key';
         transports?: AuthenticatorTransport[];
     }[];
     authenticatorSelection?: {
-        authenticatorAttachment?: "platform" | "cross-platform";
-        userVerification?: "required" | "preferred" | "discouraged";
-        residentKey?: "discouraged" | "preferred" | "required";
+        authenticatorAttachment?: 'platform' | 'cross-platform';
+        userVerification?: 'required' | 'preferred' | 'discouraged';
+        residentKey?: 'discouraged' | 'preferred' | 'required';
     };
-    attestation?: "none" | "indirect" | "direct";
+    attestation?: 'none' | 'indirect' | 'direct';
 }
 
 export interface PublicKeyCredentialRequestOptionsJSON {
@@ -189,10 +189,10 @@ export interface PublicKeyCredentialRequestOptionsJSON {
     rpId?: string;
     allowCredentials?: {
         id: string;
-        type: "public-key";
+        type: 'public-key';
         transports?: AuthenticatorTransport[];
     }[];
-    userVerification?: "required" | "preferred" | "discouraged";
+    userVerification?: 'required' | 'preferred' | 'discouraged';
 }
 
 // WebAuthn response types (what comes back from the browser)
@@ -204,7 +204,7 @@ export interface RegistrationCredentialJSON {
         attestationObject: string;
         transports?: AuthenticatorTransport[];
     };
-    type: "public-key";
+    type: 'public-key';
     clientExtensionResults?: Record<string, any>;
 }
 
@@ -217,7 +217,7 @@ export interface AuthenticationCredentialJSON {
         signature: string;
         userHandle?: string;
     };
-    type: "public-key";
+    type: 'public-key';
     clientExtensionResults?: Record<string, any>;
 }
 
@@ -292,7 +292,7 @@ export interface TOTPSetupResponse {
 export interface UserQueryResult
     extends Omit<
         User,
-        "created_at" | "updated_at" | "last_login_at" | "account_locked_until"
+        'created_at' | 'updated_at' | 'last_login_at' | 'account_locked_until'
     > {
     created_at: string;
     updated_at: string;
@@ -303,7 +303,7 @@ export interface UserQueryResult
 export interface WebAuthnCredentialQueryResult
     extends Omit<
         WebAuthnCredential,
-        "created_at" | "last_used_at" | "counter"
+        'created_at' | 'last_used_at' | 'counter'
     > {
     created_at: string;
     last_used_at?: string;
@@ -318,7 +318,7 @@ export class AuthenticationError extends Error {
         public statusCode: number = 401
     ) {
         super(message);
-        this.name = "AuthenticationError";
+        this.name = 'AuthenticationError';
     }
 }
 
@@ -329,7 +329,7 @@ export class ValidationError extends Error {
         public statusCode: number = 400
     ) {
         super(message);
-        this.name = "ValidationError";
+        this.name = 'ValidationError';
     }
 }
 
@@ -340,6 +340,6 @@ export class WebAuthnError extends Error {
         public statusCode: number = 400
     ) {
         super(message);
-        this.name = "WebAuthnError";
+        this.name = 'WebAuthnError';
     }
 }

@@ -119,7 +119,7 @@ export function validateHighEntropySecret(
     minEntropyBits = 256
 ): void {
     if (!secret) {
-        throw new Error("Secret must be provided");
+        throw new Error('Secret must be provided');
     }
 
     if (secret.length < minLength) {

@@ -14,42 +14,42 @@
 // 10. Implement WebAuthn credential migration tools
 
 // Set up crypto polyfill for WebAuthn
-import { Crypto } from "@peculiar/webcrypto";
+import { Crypto } from '@peculiar/webcrypto';
 global.crypto = new Crypto();
 
 import type {
     GenerateRegistrationOptionsOpts,
     VerifyAuthenticationResponseOpts,
     VerifyRegistrationResponseOpts,
-} from "@simplewebauthn/server";
+} from '@simplewebauthn/server';
 import {
     generateAuthenticationOptions,
     generateRegistrationOptions,
     verifyAuthenticationResponse,
     verifyRegistrationResponse,
-} from "@simplewebauthn/server";
+} from '@simplewebauthn/server';
 import {
     AuthChallengeModel,
     UserModel,
     WebAuthnCredentialModel,
-} from "../models/auth.models";
+} from '../models/auth.models';
 import {
     AuthenticationCredentialJSON,
     PublicKeyCredentialCreationOptionsJSON,
     RegistrationCredentialJSON,
     WebAuthnError,
-} from "../types/auth.types";
+} from '../types/auth.types';
 
 export class WebAuthnService {
-    private static readonly RP_NAME = process.env.RP_NAME || "WishMaker";
-    private static readonly RP_ID = process.env.RP_ID || "localhost";
+    private static readonly RP_NAME = process.env.RP_NAME || 'WishMaker';
+    private static readonly RP_ID = process.env.RP_ID || 'localhost';
     private static readonly ORIGIN =
-        process.env.ORIGIN || "http://localhost:3000";
+        process.env.ORIGIN || 'http://localhost:3000';
     private static readonly CHALLENGE_TIMEOUT = parseInt(
-        process.env.CHALLENGE_TIMEOUT_MS || "300000"
+        process.env.CHALLENGE_TIMEOUT_MS || '300000'
     ); // 5 minutes default
     private static readonly WEBAUTHN_TIMEOUT = parseInt(
-        process.env.WEBAUTHN_TIMEOUT_MS || "60000"
+        process.env.WEBAUTHN_TIMEOUT_MS || '60000'
     ); // 1 minute default
 
     /**
@@ -63,8 +63,8 @@ export class WebAuthnService {
             const user = await UserModel.findById(userId);
             if (!user) {
                 throw new WebAuthnError(
-                    "User not found",
-                    "USER_NOT_FOUND",
+                    'User not found',
+                    'USER_NOT_FOUND',
                     404
                 );
             }
@@ -77,25 +77,24 @@ export class WebAuthnService {
                 userName: user.email,
                 userDisplayName: user.display_name || user.username,
                 timeout: WebAuthnService.WEBAUTHN_TIMEOUT, // Configurable timeout
-                attestationType: "none" as const, // For privacy, we don't need attestation
+                attestationType: 'none' as const, // For privacy, we don't need attestation
                 excludeCredentials: [],
                 authenticatorSelection: {
-                    authenticatorAttachment: "platform", // Prefer built-in authenticators (biometrics)
-                    userVerification: "required", // Require biometric verification
-                    residentKey: "preferred", // Allow passwordless login if supported
+                    authenticatorAttachment: 'platform', // Prefer built-in authenticators (biometrics)
+                    userVerification: 'required', // Require biometric verification
+                    residentKey: 'preferred', // Allow passwordless login if supported
                 },
                 supportedAlgorithmIDs: [-7, -257], // ES256 and RS256
             };
 
-            const registrationOptions = await generateRegistrationOptions(
-                options
-            );
+            const registrationOptions =
+                await generateRegistrationOptions(options);
 
             // Store the challenge for verification
             await AuthChallengeModel.create({
                 challenge: registrationOptions.challenge,
                 user_id: userId,
-                challenge_type: "registration",
+                challenge_type: 'registration',
                 origin: WebAuthnService.ORIGIN,
                 expires_at: new Date(
                     Date.now() + WebAuthnService.CHALLENGE_TIMEOUT
@@ -115,7 +114,7 @@ export class WebAuthnService {
                 },
                 challenge: registrationOptions.challenge,
                 pubKeyCredParams: registrationOptions.pubKeyCredParams.map(
-                    (param) => ({
+                    param => ({
                         alg: param.alg,
                         type: param.type,
                     })
@@ -123,22 +122,22 @@ export class WebAuthnService {
                 timeout: registrationOptions.timeout,
                 excludeCredentials: [],
                 authenticatorSelection: {
-                    authenticatorAttachment: "platform",
-                    userVerification: "required",
-                    residentKey: "preferred",
+                    authenticatorAttachment: 'platform',
+                    userVerification: 'required',
+                    residentKey: 'preferred',
                 },
-                attestation: "none",
+                attestation: 'none',
             };
         } catch (error) {
-            console.error("WebAuthn registration options error:", error);
+            console.error('WebAuthn registration options error:', error);
             if (error instanceof WebAuthnError) {
                 throw error;
             }
             throw new WebAuthnError(
                 `Failed to generate registration options: ${
-                    error instanceof Error ? error.message : "Unknown error"
+                    error instanceof Error ? error.message : 'Unknown error'
                 }`,
-                "REGISTRATION_OPTIONS_FAILED"
+                'REGISTRATION_OPTIONS_FAILED'
             );
         }
     }
@@ -154,27 +153,26 @@ export class WebAuthnService {
     ): Promise<{ verified: boolean; credentialId?: string }> {
         try {
             // Verify the challenge exists and is valid
-            const challenge = await AuthChallengeModel.findByChallenge(
-                expectedChallenge
-            );
+            const challenge =
+                await AuthChallengeModel.findByChallenge(expectedChallenge);
             if (
                 !challenge ||
                 challenge.used ||
                 challenge.expires_at < new Date()
             ) {
                 throw new WebAuthnError(
-                    "Invalid or expired challenge",
-                    "INVALID_CHALLENGE"
+                    'Invalid or expired challenge',
+                    'INVALID_CHALLENGE'
                 );
             }
 
             if (
                 challenge.user_id !== userId ||
-                challenge.challenge_type !== "registration"
+                challenge.challenge_type !== 'registration'
             ) {
                 throw new WebAuthnError(
-                    "Challenge mismatch",
-                    "CHALLENGE_MISMATCH"
+                    'Challenge mismatch',
+                    'CHALLENGE_MISMATCH'
                 );
             }
 
@@ -203,8 +201,8 @@ export class WebAuthnService {
 
             if (!verification.verified || !verification.registrationInfo) {
                 throw new WebAuthnError(
-                    "Registration verification failed",
-                    "VERIFICATION_FAILED"
+                    'Registration verification failed',
+                    'VERIFICATION_FAILED'
                 );
             }
 
@@ -226,14 +224,14 @@ export class WebAuthnService {
                 public_key: Buffer.from(credentialPublicKey),
                 counter: BigInt(counter),
                 device_type:
-                    credentialDeviceType === "singleDevice"
-                        ? "platform"
-                        : "cross-platform",
-                transports: credential.response.transports || ["internal"],
+                    credentialDeviceType === 'singleDevice'
+                        ? 'platform'
+                        : 'cross-platform',
+                transports: credential.response.transports || ['internal'],
                 backup_eligible: credentialBackedUp,
                 backup_state: credentialBackedUp,
-                attestation_type: "none",
-                device_name: deviceName || "Biometric Device",
+                attestation_type: 'none',
+                device_name: deviceName || 'Biometric Device',
                 is_active: true,
             });
 
@@ -246,8 +244,8 @@ export class WebAuthnService {
                 throw error;
             }
             throw new WebAuthnError(
-                "Registration verification failed",
-                "VERIFICATION_ERROR"
+                'Registration verification failed',
+                'VERIFICATION_ERROR'
             );
         }
     }
@@ -258,27 +256,26 @@ export class WebAuthnService {
     static async generateAuthenticationOptions(userId: number): Promise<any> {
         try {
             // Get user's credentials
-            const credentials = await WebAuthnCredentialModel.findByUserId(
-                userId
-            );
+            const credentials =
+                await WebAuthnCredentialModel.findByUserId(userId);
 
             if (credentials.length === 0) {
                 throw new WebAuthnError(
-                    "No biometric credentials registered for this account",
-                    "NO_CREDENTIALS_FOUND",
+                    'No biometric credentials registered for this account',
+                    'NO_CREDENTIALS_FOUND',
                     404
                 );
             }
 
-            const allowCredentials = credentials.map((cred) => ({
+            const allowCredentials = credentials.map(cred => ({
                 id: cred.credential_id,
-                type: "public-key" as const,
+                type: 'public-key' as const,
             }));
 
             const options = await generateAuthenticationOptions({
                 rpID: WebAuthnService.RP_ID,
                 allowCredentials,
-                userVerification: "preferred",
+                userVerification: 'preferred',
                 timeout: WebAuthnService.WEBAUTHN_TIMEOUT,
             });
 
@@ -286,7 +283,7 @@ export class WebAuthnService {
             await AuthChallengeModel.create({
                 user_id: userId,
                 challenge: options.challenge,
-                challenge_type: "authentication",
+                challenge_type: 'authentication',
                 origin: WebAuthnService.ORIGIN,
                 expires_at: new Date(
                     Date.now() + WebAuthnService.CHALLENGE_TIMEOUT
@@ -295,7 +292,7 @@ export class WebAuthnService {
 
             return options;
         } catch (error) {
-            console.error("Error generating authentication options:", error);
+            console.error('Error generating authentication options:', error);
             throw error;
         }
     }
@@ -309,24 +306,23 @@ export class WebAuthnService {
     ): Promise<{ verified: boolean; userId?: number; credentialId?: string }> {
         try {
             // Verify the challenge exists and is valid
-            const challenge = await AuthChallengeModel.findByChallenge(
-                expectedChallenge
-            );
+            const challenge =
+                await AuthChallengeModel.findByChallenge(expectedChallenge);
             if (
                 !challenge ||
                 challenge.used ||
                 challenge.expires_at < new Date()
             ) {
                 throw new WebAuthnError(
-                    "Invalid or expired challenge",
-                    "INVALID_CHALLENGE"
+                    'Invalid or expired challenge',
+                    'INVALID_CHALLENGE'
                 );
             }
 
-            if (challenge.challenge_type !== "authentication") {
+            if (challenge.challenge_type !== 'authentication') {
                 throw new WebAuthnError(
-                    "Challenge type mismatch",
-                    "CHALLENGE_MISMATCH"
+                    'Challenge type mismatch',
+                    'CHALLENGE_MISMATCH'
                 );
             }
 
@@ -335,8 +331,8 @@ export class WebAuthnService {
                 await WebAuthnCredentialModel.findByCredentialId(credential.id);
             if (!storedCredential || !storedCredential.is_active) {
                 throw new WebAuthnError(
-                    "Credential not found or inactive",
-                    "CREDENTIAL_NOT_FOUND"
+                    'Credential not found or inactive',
+                    'CREDENTIAL_NOT_FOUND'
                 );
             }
 
@@ -372,8 +368,8 @@ export class WebAuthnService {
 
             if (!verification.verified || !verification.authenticationInfo) {
                 throw new WebAuthnError(
-                    "Authentication verification failed",
-                    "VERIFICATION_FAILED"
+                    'Authentication verification failed',
+                    'VERIFICATION_FAILED'
                 );
             }
 
@@ -396,8 +392,8 @@ export class WebAuthnService {
                 throw error;
             }
             throw new WebAuthnError(
-                "Authentication verification failed",
-                "VERIFICATION_ERROR"
+                'Authentication verification failed',
+                'VERIFICATION_ERROR'
             );
         }
     }

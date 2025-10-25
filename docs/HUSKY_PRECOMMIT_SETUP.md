@@ -30,7 +30,7 @@ When you run `git commit`, the pre-commit hook automatically:
       "npm run format --prefix frontend"
     ],
     "backend/**/*.{js,ts}": [
-      "npm run lint:fix --prefix backend", 
+      "npm run lint:fix --prefix backend",
       "npm run format --prefix backend"
     ],
     "*.{json,md,yml,yaml}": [
@@ -43,7 +43,7 @@ When you run `git commit`, the pre-commit hook automatically:
 ### File Processing Rules
 
 - **Frontend TypeScript/React**: ESLint fix → Prettier format
-- **Backend TypeScript**: ESLint fix → Prettier format  
+- **Backend TypeScript**: ESLint fix → Prettier format
 - **Config Files**: Prettier format only (JSON, Markdown, YAML)
 
 ## Pre-commit Hook Location
@@ -83,7 +83,7 @@ git add frontend/src/example.ts
 # 3. Commit (triggers pre-commit hook)
 git commit -m "Add example"
 # → ESLint fixes issues
-# → Prettier formats code  
+# → Prettier formats code
 # → Commit succeeds with clean code
 
 # 4. Result: Clean, formatted code is committed

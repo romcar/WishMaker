@@ -8,36 +8,36 @@
  * detailed performance insights.
  */
 
-const lighthouse = require("lighthouse");
-const chromeLauncher = require("chrome-launcher");
-const fs = require("fs").promises;
-const path = require("path");
+const lighthouse = require('lighthouse');
+const chromeLauncher = require('chrome-launcher');
+const fs = require('fs').promises;
+const path = require('path');
 
 class WebVitalsReporter {
-    constructor(url = "http://localhost:3000") {
+    constructor(url = 'http://localhost:3000') {
         this.url = url;
         this.chrome = null;
     }
 
     async generateReport() {
-        console.log("🚀 Starting Web Vitals analysis...");
+        console.log('🚀 Starting Web Vitals analysis...');
         console.log(`📊 Analyzing: ${this.url}`);
 
         try {
             // Launch Chrome
             this.chrome = await chromeLauncher.launch({
                 chromeFlags: [
-                    "--headless",
-                    "--no-sandbox",
-                    "--disable-dev-shm-usage",
+                    '--headless',
+                    '--no-sandbox',
+                    '--disable-dev-shm-usage',
                 ],
             });
 
             // Run Lighthouse
             const options = {
-                logLevel: "info",
-                output: "json",
-                onlyCategories: ["performance"],
+                logLevel: 'info',
+                output: 'json',
+                onlyCategories: ['performance'],
                 port: this.chrome.port,
             };
 
@@ -49,14 +49,14 @@ class WebVitalsReporter {
 
             const webVitals = {
                 // Core Web Vitals
-                LCP: audits["largest-contentful-paint"]?.numericValue || 0,
-                FID: audits["max-potential-fid"]?.numericValue || 0, // Estimated FID
-                CLS: audits["cumulative-layout-shift"]?.numericValue || 0,
+                LCP: audits['largest-contentful-paint']?.numericValue || 0,
+                FID: audits['max-potential-fid']?.numericValue || 0, // Estimated FID
+                CLS: audits['cumulative-layout-shift']?.numericValue || 0,
 
                 // Additional important metrics
-                FCP: audits["first-contentful-paint"]?.numericValue || 0,
-                TTFB: audits["server-response-time"]?.numericValue || 0,
-                Speed_Index: audits["speed-index"]?.numericValue || 0,
+                FCP: audits['first-contentful-paint']?.numericValue || 0,
+                TTFB: audits['server-response-time']?.numericValue || 0,
+                Speed_Index: audits['speed-index']?.numericValue || 0,
 
                 // Performance score
                 performance_score: lhr.categories.performance?.score * 100 || 0,
@@ -67,7 +67,7 @@ class WebVitalsReporter {
 
             return webVitals;
         } catch (error) {
-            console.error("❌ Error generating report:", error.message);
+            console.error('❌ Error generating report:', error.message);
             throw error;
         } finally {
             if (this.chrome) {
@@ -77,85 +77,75 @@ class WebVitalsReporter {
     }
 
     displayReport(metrics) {
-        console.log("\n📊 WEB VITALS REPORT");
-        console.log("=".repeat(50));
+        console.log('\n📊 WEB VITALS REPORT');
+        console.log('='.repeat(50));
 
         // Performance Score
         const scoreColor =
             metrics.performance_score >= 90
-                ? "🟢"
+                ? '🟢'
                 : metrics.performance_score >= 50
-                ? "🟡"
-                : "🔴";
+                  ? '🟡'
+                  : '🔴';
         console.log(
-            `${scoreColor} Performance Score: ${Math.round(
-                metrics.performance_score
-            )}/100`
+            `${scoreColor} Performance Score: ${Math.round(metrics.performance_score)}/100`
         );
 
-        console.log("\n🎯 CORE WEB VITALS:");
+        console.log('\n🎯 CORE WEB VITALS:');
 
         // LCP
         const lcpRating =
             metrics.LCP < 2500
-                ? "🟢 Good"
+                ? '🟢 Good'
                 : metrics.LCP < 4000
-                ? "🟡 Needs Improvement"
-                : "🔴 Poor";
+                  ? '🟡 Needs Improvement'
+                  : '🔴 Poor';
         console.log(
-            `📸 Largest Contentful Paint: ${Math.round(
-                metrics.LCP
-            )}ms (${lcpRating})`
+            `📸 Largest Contentful Paint: ${Math.round(metrics.LCP)}ms (${lcpRating})`
         );
 
         // FID (estimated)
         const fidRating =
             metrics.FID < 100
-                ? "🟢 Good"
+                ? '🟢 Good'
                 : metrics.FID < 300
-                ? "🟡 Needs Improvement"
-                : "🔴 Poor";
+                  ? '🟡 Needs Improvement'
+                  : '🔴 Poor';
         console.log(
-            `⚡ First Input Delay (est): ${Math.round(
-                metrics.FID
-            )}ms (${fidRating})`
+            `⚡ First Input Delay (est): ${Math.round(metrics.FID)}ms (${fidRating})`
         );
 
         // CLS
         const clsRating =
             metrics.CLS < 0.1
-                ? "🟢 Good"
+                ? '🟢 Good'
                 : metrics.CLS < 0.25
-                ? "🟡 Needs Improvement"
-                : "🔴 Poor";
+                  ? '🟡 Needs Improvement'
+                  : '🔴 Poor';
         console.log(
-            `📏 Cumulative Layout Shift: ${metrics.CLS.toFixed(
-                3
-            )} (${clsRating})`
+            `📏 Cumulative Layout Shift: ${metrics.CLS.toFixed(3)} (${clsRating})`
         );
 
-        console.log("\n📈 ADDITIONAL METRICS:");
+        console.log('\n📈 ADDITIONAL METRICS:');
 
         // FCP
         const fcpRating =
             metrics.FCP < 1800
-                ? "🟢 Good"
+                ? '🟢 Good'
                 : metrics.FCP < 3000
-                ? "🟡 Needs Improvement"
-                : "🔴 Poor";
+                  ? '🟡 Needs Improvement'
+                  : '🔴 Poor';
         console.log(
-            `🎨 First Contentful Paint: ${Math.round(
-                metrics.FCP
-            )}ms (${fcpRating})`
+            `🎨 First Contentful Paint: ${Math.round(metrics.FCP)}ms (${fcpRating})`
         );
 
         // Speed Index
         const siRating =
             metrics.Speed_Index < 3400
-                ? "🟢 Good"
+                ? '🟢 Good'
                 : metrics.Speed_Index < 5800
-                ? "🟡 Needs Improvement"
-                : "🔴 Poor";
+                  ? '🟡 Needs Improvement'
+                  : '🔴 Poor';
         console.log(
             `🏃 Speed Index: ${Math.round(metrics.Speed_Index)}ms (${siRating})`
         );
@@ -163,26 +153,24 @@ class WebVitalsReporter {
         // TTFB
         const ttfbRating =
             metrics.TTFB < 800
-                ? "🟢 Good"
+                ? '🟢 Good'
                 : metrics.TTFB < 1800
-                ? "🟡 Needs Improvement"
-                : "🔴 Poor";
+                  ? '🟡 Needs Improvement'
+                  : '🔴 Poor';
         console.log(
-            `🌐 Time to First Byte: ${Math.round(
-                metrics.TTFB
-            )}ms (${ttfbRating})`
+            `🌐 Time to First Byte: ${Math.round(metrics.TTFB)}ms (${ttfbRating})`
         );
 
-        console.log("\n💡 RECOMMENDATIONS:");
+        console.log('\n💡 RECOMMENDATIONS:');
         if (metrics.performance_score < 90) {
             console.log(
-                "• Consider optimizing images and reducing bundle size"
+                '• Consider optimizing images and reducing bundle size'
             );
-            console.log("• Implement code splitting and lazy loading");
-            console.log("• Optimize server response times");
-            console.log("• Minimize layout shifts during page load");
+            console.log('• Implement code splitting and lazy loading');
+            console.log('• Optimize server response times');
+            console.log('• Minimize layout shifts during page load');
         } else {
-            console.log("• Your application has excellent performance! 🎉");
+            console.log('• Your application has excellent performance! 🎉');
         }
     }
 
@@ -198,7 +186,7 @@ class WebVitalsReporter {
 
         const reportPath = path.join(
             __dirname,
-            "../reports",
+            '../reports',
             `web-vitals-${Date.now()}.json`
         );
 
@@ -210,29 +198,29 @@ class WebVitalsReporter {
             await fs.writeFile(reportPath, JSON.stringify(reportData, null, 2));
             console.log(`\n💾 Report saved to: ${reportPath}`);
         } catch (error) {
-            console.warn("⚠️  Could not save report:", error.message);
+            console.warn('⚠️  Could not save report:', error.message);
         }
     }
 }
 
 // CLI usage
 async function main() {
-    const url = process.argv[2] || "http://localhost:3000";
+    const url = process.argv[2] || 'http://localhost:3000';
 
-    console.log("🔍 WishMaker Web Vitals Reporter");
-    console.log("================================\n");
+    console.log('🔍 WishMaker Web Vitals Reporter');
+    console.log('================================\n');
 
     const reporter = new WebVitalsReporter(url);
 
     try {
         await reporter.generateReport();
-        console.log("\n✅ Web Vitals analysis complete!");
+        console.log('\n✅ Web Vitals analysis complete!');
     } catch (error) {
-        console.error("\n❌ Analysis failed:", error.message);
-        console.log("\n💡 Make sure:");
-        console.log("• The application is running at", url);
-        console.log("• Chrome/Chromium is installed");
-        console.log("• No firewall is blocking the connection");
+        console.error('\n❌ Analysis failed:', error.message);
+        console.log('\n💡 Make sure:');
+        console.log('• The application is running at', url);
+        console.log('• Chrome/Chromium is installed');
+        console.log('• No firewall is blocking the connection');
         process.exit(1);
     }
 }

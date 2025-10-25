@@ -6,18 +6,18 @@
 // 4. ErrorBoundary for global error handling
 // 5. NotificationProvider for user feedback
 // 6. Router setup for multiple pages/views
-import { useEffect, useState } from "react";
-import "./App.css";
-import DemoBanner from "./components/DemoBanner";
-import DeveloperToolbar from "./components/DeveloperToolbar";
-import Login from "./components/Login";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Register from "./components/Register";
-import WishForm from "./components/WishForm";
-import WishList from "./components/WishList";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { wishAPI } from "./services/api";
-import { CreateWishInput, Wish } from "./types/wish.types";
+import { useEffect, useState } from 'react';
+import './App.css';
+import DemoBanner from './components/DemoBanner';
+import DeveloperToolbar from './components/DeveloperToolbar';
+import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
+import Register from './components/Register';
+import WishForm from './components/WishForm';
+import WishList from './components/WishList';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { wishAPI } from './services/api';
+import { CreateWishInput, Wish } from './types/wish.types';
 
 // Authentication Modal Component
 interface AuthModalProps {
@@ -26,27 +26,29 @@ interface AuthModalProps {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-    const [authMode, setAuthMode] = useState<"login" | "register">("login");
+    const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
-    const handleSwitchToLogin = () => setAuthMode("login");
-    const handleSwitchToRegister = () => setAuthMode("register");
+    const handleSwitchToLogin = () => setAuthMode('login');
+    const handleSwitchToRegister = () => setAuthMode('register');
     const handleAuthSuccess = () => {
         onClose();
-        setAuthMode("login"); // Reset to login for next time
+        setAuthMode('login'); // Reset to login for next time
     };
 
     return (
         <div className="auth-modal-overlay" onClick={onClose}>
             <div
                 className="auth-modal-content"
-                onClick={(e) => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
             >
                 <button className="auth-modal-close" onClick={onClose}>
                     ✕
                 </button>
-                {authMode === "login" ? (
+                {authMode === 'login' ? (
                     <Login
                         onSwitchToRegister={handleSwitchToRegister}
                         onSuccess={handleAuthSuccess}
@@ -67,7 +69,9 @@ const UserMenu: React.FC = () => {
     const { user, logout } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    if (!user) return null;
+    if (!user) {
+        return null;
+    }
 
     const handleLogout = async () => {
         await logout();
@@ -149,9 +153,9 @@ function AppContent() {
             setError(null);
         };
 
-        window.addEventListener("auth:logout", handleAuthLogout);
+        window.addEventListener('auth:logout', handleAuthLogout);
         return () =>
-            window.removeEventListener("auth:logout", handleAuthLogout);
+            window.removeEventListener('auth:logout', handleAuthLogout);
     }, []);
 
     const fetchWishes = async () => {
@@ -161,8 +165,8 @@ function AppContent() {
             const data = await wishAPI.getAllWishes();
             setWishes(data);
         } catch (err: any) {
-            setError(err.message || "Failed to fetch wishes");
-            console.error("Error fetching wishes:", err);
+            setError(err.message || 'Failed to fetch wishes');
+            console.error('Error fetching wishes:', err);
         } finally {
             setLoading(false);
         }
@@ -173,33 +177,33 @@ function AppContent() {
             const newWish = await wishAPI.createWish(wish);
             setWishes([newWish, ...wishes]);
         } catch (err: any) {
-            setError(err.message || "Failed to create wish");
-            console.error("Error creating wish:", err);
+            setError(err.message || 'Failed to create wish');
+            console.error('Error creating wish:', err);
         }
     };
 
     const handleDeleteWish = async (id: number) => {
         try {
             await wishAPI.deleteWish(id);
-            setWishes(wishes.filter((wish) => wish.id !== id));
+            setWishes(wishes.filter(wish => wish.id !== id));
         } catch (err: any) {
-            setError(err.message || "Failed to delete wish");
-            console.error("Error deleting wish:", err);
+            setError(err.message || 'Failed to delete wish');
+            console.error('Error deleting wish:', err);
         }
     };
 
     const handleStatusChange = async (
         id: number,
-        status: "pending" | "fulfilled" | "cancelled"
+        status: 'pending' | 'fulfilled' | 'cancelled'
     ) => {
         try {
             const updatedWish = await wishAPI.updateWish(id, { status });
             setWishes(
-                wishes.map((wish) => (wish.id === id ? updatedWish : wish))
+                wishes.map(wish => (wish.id === id ? updatedWish : wish))
             );
         } catch (err: any) {
-            setError(err.message || "Failed to update wish status");
-            console.error("Error updating wish:", err);
+            setError(err.message || 'Failed to update wish status');
+            console.error('Error updating wish:', err);
         }
     };
 

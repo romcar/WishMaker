@@ -1,5 +1,5 @@
 // TODO: ENHANCEMENT - Expand Wish model with missing features
-// 1. Add user_id field for multi-user support (currently missing!)
+// 1. ✅ Added user_id field for multi-user support (Supabase integration)
 // 2. Add priority field (low, medium, high, urgent)
 // 3. Add category/tags for organization (array of strings)
 // 4. Add target_date for deadline tracking
@@ -10,23 +10,24 @@
 // 9. Add location field for location-based wishes
 // 10. Add sharing capabilities (share_token, shared_with array)
 export interface Wish {
-  id: number;
-  title: string;
-  description?: string;
-  created_at: string;
-  updated_at: string;
-  status: 'pending' | 'fulfilled' | 'cancelled';
+    id: number;
+    title: string;
+    description: string | null;
+    created_at: string;
+    updated_at: string;
+    status: 'pending' | 'fulfilled' | 'cancelled';
+    user_id: string; // Added for Supabase multi-user support
 }
 
 export interface CreateWishInput {
-  title: string;
-  description?: string;
+    title: string;
+    description: string | null;
 }
 
 export interface UpdateWishInput {
-  title?: string;
-  description?: string;
-  status?: 'pending' | 'fulfilled' | 'cancelled';
+    title?: string;
+    description?: string | null;
+    status?: 'pending' | 'fulfilled' | 'cancelled';
 }
 
 // TODO: MISSING INTERFACES - Add these missing type definitions:

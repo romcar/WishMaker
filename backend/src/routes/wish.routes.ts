@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import {
-  createWish,
-  deleteWish,
-  getAllWishes,
-  getWishById,
-  updateWish,
+    createWish,
+    deleteWish,
+    getAllWishes,
+    getWishById,
+    updateWish,
 } from '../controllers/wish.controller';
 
 // TODO: CRITICAL - Missing authentication middleware

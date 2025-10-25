@@ -33,13 +33,16 @@ services:
         build:
             context: ./frontend
             args:
-                # Only non-sensitive build-time variables
+                # Build-time variables (required for React build)
                 PUBLIC_URL: /
                 REACT_APP_API_URL: http://localhost:8000
+                # Supabase configuration (anon keys are designed to be client-side)
+                REACT_APP_SUPABASE_URL: https://ljocabfjocpioxrflbzp.supabase.co
+                REACT_APP_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxqb2NhYmZqb2NwaW94cmZsYnpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5NzUzMDAsImV4cCI6MjA3NjU1MTMwMH0.IkxRZZlatQIqwk0lQLmYxsXoE2wCDKlcPn39KcTflhA
+                REACT_APP_SITE_URL: http://localhost:3000
         container_name: wishmaker-frontend
         env_file:
             - .env.local
-        # Sensitive data is provided via .env.local at runtime, not build-time
         ports:
             - "3000:3000"
         depends_on:

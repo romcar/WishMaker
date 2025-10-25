@@ -226,7 +226,7 @@ npm run format
 # Check formatting
 npm run format:check
 
-# Lint and fix issues  
+# Lint and fix issues
 npm run lint:fix
 
 # Lint check only

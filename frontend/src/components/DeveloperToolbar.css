@@ -225,7 +225,7 @@
 .dev-env-value {
     font-size: 13px;
     color: #6b7280;
-    font-family: "Monaco", "Menlo", monospace;
+    font-family: 'Monaco', 'Menlo', monospace;
 }
 
 .dev-env-url,

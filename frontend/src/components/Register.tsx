@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { AuthService } from "../services/auth.service";
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { AuthService } from '../services/auth.service';
 import {
     PublicKeyCredentialCreationOptionsJSON,
     PublicKeyCredentialJSON,
     RegisterRequest,
-} from "../types/auth.types";
-import "./Register.css";
+} from '../types/auth.types';
+import './Register.css';
 
 type WebAuthnCredentialState = PublicKeyCredentialJSON | { success: true };
 
@@ -19,12 +19,12 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
     const { register, error, isLoading, clearError } = useAuth();
 
     const [formData, setFormData] = useState<RegisterRequest>({
-        username: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        firstName: "",
-        lastName: "",
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        firstName: '',
+        lastName: '',
     });
 
     const [validationErrors, setValidationErrors] = useState<
@@ -41,8 +41,8 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
     const [webAuthnCredential, setWebAuthnCredential] =
         useState<WebAuthnCredentialState | null>(null);
     const [registrationStep, setRegistrationStep] = useState<
-        "form" | "webauthn-setup" | "complete"
-    >("form");
+        'form' | 'webauthn-setup' | 'complete'
+    >('form');
 
     // Check WebAuthn support on component mount
     React.useEffect(() => {
@@ -61,11 +61,11 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
     // Handle input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData(prev => ({ ...prev, [name]: value }));
 
         // Clear validation error for this field
         if (validationErrors[name as keyof typeof validationErrors]) {
-            setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
+            setValidationErrors(prev => ({ ...prev, [name]: undefined }));
         }
 
         // Clear auth error
@@ -80,47 +80,47 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
             {};
 
         if (!formData.username.trim()) {
-            errors.username = "Username is required";
+            errors.username = 'Username is required';
         } else if (!/^[a-zA-Z0-9_-]{3,30}$/.test(formData.username)) {
             errors.username =
-                "Username must be 3-30 characters long and contain only letters, numbers, underscores, and hyphens";
+                'Username must be 3-30 characters long and contain only letters, numbers, underscores, and hyphens';
         }
 
         if (!formData.firstName.trim()) {
-            errors.firstName = "First name is required";
+            errors.firstName = 'First name is required';
         } else if (formData.firstName.trim().length < 2) {
-            errors.firstName = "First name must be at least 2 characters";
+            errors.firstName = 'First name must be at least 2 characters';
         }
 
         if (!formData.lastName.trim()) {
-            errors.lastName = "Last name is required";
+            errors.lastName = 'Last name is required';
         } else if (formData.lastName.trim().length < 2) {
-            errors.lastName = "Last name must be at least 2 characters";
+            errors.lastName = 'Last name must be at least 2 characters';
         }
 
         if (!formData.email.trim()) {
-            errors.email = "Email is required";
+            errors.email = 'Email is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            errors.email = "Invalid email format";
+            errors.email = 'Invalid email format';
         }
 
         if (!formData.password.trim()) {
-            errors.password = "Password is required";
+            errors.password = 'Password is required';
         } else if (formData.password.length < 8) {
-            errors.password = "Password must be at least 8 characters";
+            errors.password = 'Password must be at least 8 characters';
         } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
             // TODO: ENHANCEMENT - Expand password validation rules
             // Add special character requirement: (?=.*[!@#$%^&*])
             // Consider password strength meter with visual feedback
             // Add check against common passwords list
             errors.password =
-                "Password must contain at least one uppercase letter, one lowercase letter, and one number";
+                'Password must contain at least one uppercase letter, one lowercase letter, and one number';
         }
 
         if (!formData.confirmPassword.trim()) {
-            errors.confirmPassword = "Password confirmation is required";
+            errors.confirmPassword = 'Password confirmation is required';
         } else if (formData.password !== formData.confirmPassword) {
-            errors.confirmPassword = "Passwords do not match";
+            errors.confirmPassword = 'Passwords do not match';
         }
 
         setValidationErrors(errors);
@@ -145,13 +145,13 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                 response.webauthn_options
             ) {
                 setWebAuthnOptions(response.webauthn_options);
-                setRegistrationStep("webauthn-setup");
+                setRegistrationStep('webauthn-setup');
             } else {
-                setRegistrationStep("complete");
+                setRegistrationStep('complete');
             }
         } catch (error) {
             // Error is handled by the context and displayed via the error state
-            console.error("Registration error:", error);
+            console.error('Registration error:', error);
         }
     };
 
@@ -169,17 +169,17 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                 setWebAuthnCredential({ success: true });
             }
 
-            setRegistrationStep("complete");
+            setRegistrationStep('complete');
         } catch (error: any) {
-            console.error("WebAuthn setup error:", error);
+            console.error('WebAuthn setup error:', error);
             // Allow user to skip WebAuthn setup and continue
-            setRegistrationStep("complete");
+            setRegistrationStep('complete');
         }
     };
 
     // Skip WebAuthn setup
     const handleSkipWebAuthn = () => {
-        setRegistrationStep("complete");
+        setRegistrationStep('complete');
     };
 
     // Render WebAuthn setup prompt
@@ -211,8 +211,8 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                     disabled={isLoading}
                 >
                     {isLoading
-                        ? "Setting up..."
-                        : "Set up Biometric Authentication"}
+                        ? 'Setting up...'
+                        : 'Set up Biometric Authentication'}
                 </button>
 
                 <button
@@ -242,7 +242,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
             <p>
                 Your account has been created successfully.
                 {webAuthnCredential &&
-                    " Biometric authentication has been set up for your account."}
+                    ' Biometric authentication has been set up for your account.'}
             </p>
 
             <div className="next-steps">
@@ -291,7 +291,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                     name="username"
                     value={formData.username}
                     onChange={handleInputChange}
-                    className={validationErrors.username ? "error" : ""}
+                    className={validationErrors.username ? 'error' : ''}
                     placeholder="Choose a unique username"
                     autoComplete="username"
                     disabled={isLoading}
@@ -312,7 +312,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleInputChange}
-                        className={validationErrors.firstName ? "error" : ""}
+                        className={validationErrors.firstName ? 'error' : ''}
                         placeholder="Enter your first name"
                         autoComplete="given-name"
                         disabled={isLoading}
@@ -332,7 +332,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleInputChange}
-                        className={validationErrors.lastName ? "error" : ""}
+                        className={validationErrors.lastName ? 'error' : ''}
                         placeholder="Enter your last name"
                         autoComplete="family-name"
                         disabled={isLoading}
@@ -353,7 +353,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={validationErrors.email ? "error" : ""}
+                    className={validationErrors.email ? 'error' : ''}
                     placeholder="Enter your email"
                     autoComplete="email"
                     disabled={isLoading}
@@ -373,7 +373,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={validationErrors.password ? "error" : ""}
+                    className={validationErrors.password ? 'error' : ''}
                     placeholder="Create a strong password"
                     autoComplete="new-password"
                     disabled={isLoading}
@@ -399,7 +399,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className={validationErrors.confirmPassword ? "error" : ""}
+                    className={validationErrors.confirmPassword ? 'error' : ''}
                     placeholder="Confirm your password"
                     autoComplete="new-password"
                     disabled={isLoading}
@@ -416,7 +416,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
                 className="register-button primary"
                 disabled={isLoading}
             >
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
 
             {isWebAuthnSupported && isPlatformAuthenticatorAvailable && (
@@ -434,7 +434,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
 
             <div className="register-footer">
                 <p>
-                    Already have an account?{" "}
+                    Already have an account?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}
@@ -450,11 +450,11 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, onSuccess }) => {
 
     const renderCurrentStep = () => {
         switch (registrationStep) {
-            case "webauthn-setup":
+            case 'webauthn-setup':
                 return renderWebAuthnSetup();
-            case "complete":
+            case 'complete':
                 return renderRegistrationComplete();
-            case "form":
+            case 'form':
             default:
                 return renderRegistrationForm();
         }

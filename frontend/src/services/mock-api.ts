@@ -1,38 +1,42 @@
 // Mock API service for GitHub Pages demo
-import { CreateWishInput, UpdateWishInput, Wish } from "../types/wish.types";
+import { CreateWishInput, UpdateWishInput, Wish } from '../types/wish.types';
 
 // Check if we're running in GitHub Pages mode (no backend available)
-const isGitHubPages = process.env.NODE_ENV === 'production' && 
-                     (window.location.hostname === 'romcar.github.io' || 
-                      process.env.REACT_APP_DEMO_MODE === 'true');
+const isGitHubPages =
+    process.env.NODE_ENV === 'production' &&
+    (window.location.hostname === 'romcar.github.io' ||
+        process.env.REACT_APP_DEMO_MODE === 'true');
 
 // Mock data for demo
 // Mock wishes data for GitHub Pages demo
 let mockWishes: Wish[] = [
     {
         id: 1,
-        title: "Learn TypeScript",
-        description: "Master TypeScript to build better React applications",
-        status: "pending",
-        created_at: new Date("2024-01-15").toISOString(),
-        updated_at: new Date("2024-01-15").toISOString()
+        title: 'Learn TypeScript',
+        description: 'Master TypeScript to build better React applications',
+        status: 'pending',
+        user_id: 'demo-user',
+        created_at: new Date('2024-01-15').toISOString(),
+        updated_at: new Date('2024-01-15').toISOString(),
     },
     {
         id: 2,
-        title: "Travel to Japan",
-        description: "Experience the culture, food, and beautiful landscapes",
-        status: "pending",
-        created_at: new Date("2024-01-20").toISOString(),
-        updated_at: new Date("2024-01-20").toISOString()
+        title: 'Travel to Japan',
+        description: 'Experience the culture, food, and beautiful landscapes',
+        status: 'pending',
+        user_id: 'demo-user',
+        created_at: new Date('2024-01-20').toISOString(),
+        updated_at: new Date('2024-01-20').toISOString(),
     },
     {
         id: 3,
-        title: "Start a garden",
-        description: "Grow my own vegetables and herbs",
-        status: "fulfilled",
-        created_at: new Date("2024-01-10").toISOString(),
-        updated_at: new Date("2024-02-01").toISOString()
-    }
+        title: 'Start a garden',
+        description: 'Grow my own vegetables and herbs',
+        status: 'fulfilled',
+        user_id: 'demo-user',
+        created_at: new Date('2024-01-10').toISOString(),
+        updated_at: new Date('2024-02-01').toISOString(),
+    },
 ];
 
 // Mock API responses with realistic delays
@@ -55,32 +59,36 @@ export const mockWishAPI = {
 
     createWish: async (wishData: CreateWishInput): Promise<Wish> => {
         await delay(400); // Simulate network delay
-        
+
         const newWish: Wish = {
             id: Date.now(), // Simple ID generation
             title: wishData.title,
             description: wishData.description,
-            status: "pending",
+            status: 'pending',
+            user_id: 'demo-user',
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
         };
         mockWishes.push(newWish);
         return { ...newWish };
     },
 
-    updateWish: async (id: number, wishData: UpdateWishInput): Promise<Wish> => {
+    updateWish: async (
+        id: number,
+        wishData: UpdateWishInput
+    ): Promise<Wish> => {
         await delay(350); // Simulate network delay
         const index = mockWishes.findIndex(w => w.id === id);
         if (index === -1) {
             throw new Error(`Wish with id ${id} not found`);
         }
-        
+
         mockWishes[index] = {
             ...mockWishes[index],
             ...wishData,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
         };
-        
+
         return { ...mockWishes[index] };
     },
 
@@ -91,7 +99,7 @@ export const mockWishAPI = {
             throw new Error('Wish not found');
         }
         mockWishes.splice(index, 1);
-    }
+    },
 };
 
 export { isGitHubPages };

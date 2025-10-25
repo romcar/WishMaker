@@ -1,5 +1,5 @@
-import React from "react";
-import { useAuth } from "../contexts/AuthContext";
+import React from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -58,7 +58,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                             onClick={() => {
                                 // This would trigger the login modal/component
                                 // For now, we'll just log the action
-                                console.log("Redirect to login", redirectTo);
+                                console.log('Redirect to login', redirectTo);
                             }}
                         >
                             Sign In
@@ -67,7 +67,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                             className="auth-required-button secondary"
                             onClick={() => {
                                 // This would trigger the registration modal/component
-                                console.log("Redirect to register");
+                                console.log('Redirect to register');
                             }}
                         >
                             Create Account
@@ -89,9 +89,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
  */
 export const withAuth = <P extends object>(
     Component: React.ComponentType<P>,
-    options?: Omit<ProtectedRouteProps, "children">
+    options?: Omit<ProtectedRouteProps, 'children'>
 ) => {
-    const WrappedComponent: React.FC<P> = (props) => {
+    const WrappedComponent: React.FC<P> = props => {
         return (
             <ProtectedRoute {...options}>
                 <Component {...props} />
@@ -99,9 +99,7 @@ export const withAuth = <P extends object>(
         );
     };
 
-    WrappedComponent.displayName = `withAuth(${
-        Component.displayName || Component.name
-    })`;
+    WrappedComponent.displayName = `withAuth(${Component.displayName || Component.name})`;
 
     return WrappedComponent;
 };
@@ -141,11 +139,11 @@ export const usePermissions = () => {
         // Basic access control logic
         // This can be extended to support more granular permissions
         switch (resource) {
-            case "wishes":
+            case 'wishes':
                 return true; // All authenticated users can access wishes
-            case "profile":
+            case 'profile':
                 return true; // All authenticated users can access their profile
-            case "admin":
+            case 'admin':
                 return false; // Admin access not implemented yet
             default:
                 return true; // Default to allow access for authenticated users

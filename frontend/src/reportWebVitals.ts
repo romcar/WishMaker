@@ -1,6 +1,6 @@
-import { Metric, ReportHandler } from "web-vitals";
-import { isLocalHost } from "./utils/isLocalHost";
-import { getWebVitalsRating } from "./utils/webVitalsRating";
+import { Metric, ReportHandler } from 'web-vitals';
+import { isLocalHost } from './utils/isLocalHost';
+import { getWebVitalsRating } from './utils/webVitalsRating';
 
 // Enhanced Web Vitals reporting with detailed console logging and analytics
 // Only active in development environments
@@ -10,7 +10,7 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
     const isLocalEnvironment = isLocalHost();
 
     const isDevelopment =
-        process.env.NODE_ENV === "development" || isLocalEnvironment;
+        process.env.NODE_ENV === 'development' || isLocalEnvironment;
 
     if (!isDevelopment) {
         return;
@@ -25,58 +25,54 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
 
         // Color coding based on rating
         const color =
-            rating === "good"
-                ? "🟢"
-                : rating === "needs-improvement"
-                ? "🟡"
-                : "🔴";
+            rating === 'good'
+                ? '🟢'
+                : rating === 'needs-improvement'
+                  ? '🟡'
+                  : '🔴';
 
         console.group(`${color} Web Vitals Report - ${name}`);
         console.log(
-            `Value: ${Math.round(value * 1000) / 1000}${
-                name === "CLS" ? "" : "ms"
-            }`
+            `Value: ${Math.round(value * 1000) / 1000}${name === 'CLS' ? '' : 'ms'}`
         );
         console.log(`Rating: ${rating}`);
         console.log(
-            `Delta: ${Math.round(delta * 1000) / 1000}${
-                name === "CLS" ? "" : "ms"
-            }`
+            `Delta: ${Math.round(delta * 1000) / 1000}${name === 'CLS' ? '' : 'ms'}`
         );
         console.log(`Timestamp: ${new Date().toISOString()}`);
 
         // Metric-specific guidance
         switch (name) {
-            case "CLS":
+            case 'CLS':
                 console.log(
-                    "📏 Cumulative Layout Shift - Measures visual stability"
+                    '📏 Cumulative Layout Shift - Measures visual stability'
                 );
                 console.log(
-                    "Good: < 0.1, Needs improvement: 0.1-0.25, Poor: > 0.25"
-                );
-                break;
-            case "FID":
-                console.log("⚡ First Input Delay - Measures interactivity");
-                console.log(
-                    "Good: < 100ms, Needs improvement: 100-300ms, Poor: > 300ms"
+                    'Good: < 0.1, Needs improvement: 0.1-0.25, Poor: > 0.25'
                 );
                 break;
-            case "FCP":
-                console.log("🎨 First Contentful Paint - Measures loading");
+            case 'FID':
+                console.log('⚡ First Input Delay - Measures interactivity');
                 console.log(
-                    "Good: < 1.8s, Needs improvement: 1.8-3s, Poor: > 3s"
+                    'Good: < 100ms, Needs improvement: 100-300ms, Poor: > 300ms'
                 );
                 break;
-            case "LCP":
-                console.log("📸 Largest Contentful Paint - Measures loading");
+            case 'FCP':
+                console.log('🎨 First Contentful Paint - Measures loading');
                 console.log(
-                    "Good: < 2.5s, Needs improvement: 2.5-4s, Poor: > 4s"
+                    'Good: < 1.8s, Needs improvement: 1.8-3s, Poor: > 3s'
                 );
                 break;
-            case "TTFB":
-                console.log("🌐 Time to First Byte - Measures server response");
+            case 'LCP':
+                console.log('📸 Largest Contentful Paint - Measures loading');
                 console.log(
-                    "Good: < 800ms, Needs improvement: 800-1800ms, Poor: > 1800ms"
+                    'Good: < 2.5s, Needs improvement: 2.5-4s, Poor: > 4s'
+                );
+                break;
+            case 'TTFB':
+                console.log('🌐 Time to First Byte - Measures server response');
+                console.log(
+                    'Good: < 800ms, Needs improvement: 800-1800ms, Poor: > 1800ms'
                 );
                 break;
         }
@@ -89,10 +85,10 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
     };
 
     // Load and measure all Core Web Vitals
-    if (typeof window !== "undefined") {
-        import("web-vitals").then(
+    if (typeof window !== 'undefined') {
+        import('web-vitals').then(
             ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-                console.log("🚀 Starting Web Vitals measurement...");
+                console.log('🚀 Starting Web Vitals measurement...');
 
                 getCLS(defaultHandler);
                 getFID(defaultHandler);
@@ -103,7 +99,7 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
                 // Summary report after a delay to capture most metrics
                 setTimeout(() => {
                     console.log(
-                        "📊 Web Vitals measurement complete. Check individual metric reports above."
+                        '📊 Web Vitals measurement complete. Check individual metric reports above.'
                     );
                 }, 3000);
             }

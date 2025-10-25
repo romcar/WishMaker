@@ -1,32 +1,30 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { CreateWishInput, UpdateWishInput, Wish } from "../types/wish.types";
-import { TokenManager } from "./auth.service";
-import { mockWishAPI, isGitHubPages } from "./mock-api";
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import { CreateWishInput, UpdateWishInput, Wish } from '../types/wish.types';
+import { TokenManager } from './auth.service';
+import { isGitHubPages, mockWishAPI } from './mock-api';
 
 // TODO: ENVIRONMENT - Move API URL to environment configuration file
 // Need to create .env file with REACT_APP_API_URL for production deployment
 // Currently defaults to localhost which won't work in production
-const API_BASE_URL = `${
-    process.env.REACT_APP_API_URL || "http://localhost:8000"
-}/api`;
+const API_BASE_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api`;
 
 const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
     },
 });
 
 // Request interceptor to add authentication token
 api.interceptors.request.use(
-    (config) => {
+    config => {
         const token = TokenManager.getToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
-    (error) => {
+    error => {
         return Promise.reject(error);
     }
 );
@@ -80,8 +78,8 @@ api.interceptors.response.use(
                 // Consider using a proper event emitter or state management
                 // Add event listener cleanup to prevent memory leaks
                 window.dispatchEvent(
-                    new CustomEvent("auth:logout", {
-                        detail: { reason: "token_refresh_failed" },
+                    new CustomEvent('auth:logout', {
+                        detail: { reason: 'token_refresh_failed' },
                     })
                 );
             }
@@ -94,20 +92,20 @@ api.interceptors.response.use(
         if (error.response?.status === 403) {
             // Forbidden - user doesn't have permission
             throw new Error(
-                "You do not have permission to perform this action."
+                'You do not have permission to perform this action.'
             );
         }
 
         if (error.response?.status === 404) {
             // Not found
-            throw new Error("The requested resource was not found.");
+            throw new Error('The requested resource was not found.');
         }
 
         if (error.response && error.response.status >= 500) {
             // TODO: IMPROVEMENT - Add server error details when in development
             // Include error ID or timestamp for support team
             // Consider offline/retry mechanisms for server errors
-            throw new Error("A server error occurred. Please try again later.");
+            throw new Error('A server error occurred. Please try again later.');
         }
 
         // TODO: ENHANCEMENT - Better network error detection
@@ -115,7 +113,7 @@ api.interceptors.response.use(
         // Add offline detection and retry strategies
         if (!error.response) {
             throw new Error(
-                "Network error. Please check your internet connection."
+                'Network error. Please check your internet connection.'
             );
         }
 
@@ -139,7 +137,7 @@ export const handleAPIError = (error: any): string => {
         return error.message;
     }
 
-    return "An unexpected error occurred. Please try again.";
+    return 'An unexpected error occurred. Please try again.';
 };
 
 // Enhanced wishAPI with better error handling
@@ -149,7 +147,7 @@ export const wishAPI = {
             return mockWishAPI.getWishes();
         }
         try {
-            const response = await api.get<Wish[]>("/wishes");
+            const response = await api.get<Wish[]>('/wishes');
             return response.data;
         } catch (error) {
             throw new Error(handleAPIError(error));
@@ -174,9 +172,9 @@ export const wishAPI = {
         }
         try {
             if (!isAuthenticatedForAPI()) {
-                throw new Error("You must be logged in to create a wish.");
+                throw new Error('You must be logged in to create a wish.');
             }
-            const response = await api.post<Wish>("/wishes", wish);
+            const response = await api.post<Wish>('/wishes', wish);
             return response.data;
         } catch (error) {
             throw new Error(handleAPIError(error));
@@ -189,7 +187,7 @@ export const wishAPI = {
         }
         try {
             if (!isAuthenticatedForAPI()) {
-                throw new Error("You must be logged in to update a wish.");
+                throw new Error('You must be logged in to update a wish.');
             }
             const response = await api.put<Wish>(`/wishes/${id}`, wish);
             return response.data;
@@ -204,7 +202,7 @@ export const wishAPI = {
         }
         try {
             if (!isAuthenticatedForAPI()) {
-                throw new Error("You must be logged in to delete a wish.");
+                throw new Error('You must be logged in to delete a wish.');
             }
             await api.delete(`/wishes/${id}`);
         } catch (error) {

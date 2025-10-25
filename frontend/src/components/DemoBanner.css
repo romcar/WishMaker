@@ -47,7 +47,8 @@
 }
 
 @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
         transform: scale(1);
     }
     50% {
@@ -60,11 +61,11 @@
         padding: 10px 15px;
         font-size: 13px;
     }
-    
+
     .demo-banner-content {
         gap: 8px;
     }
-    
+
     .demo-link {
         padding: 4px 8px;
         font-size: 12px;

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from 'axios';
 import {
     AuthSession,
     LoginRequest,
@@ -10,28 +10,26 @@ import {
     RegistrationResponse,
     User,
     WebAuthnRegistrationRequest,
-} from "../types/auth.types";
+} from '../types/auth.types';
 
-const API_BASE_URL = `${
-    process.env.REACT_APP_API_URL || "http://localhost:8000"
-}/api/auth`;
+const API_BASE_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api/auth`;
 
 // Mock user for demo mode
 export const mockDemoUser: User = {
-    id: 1,
-    email: "demo@wishmaker.app",
-    firstName: "Demo",
-    lastName: "User",
+    id: 'demo-user-uuid',
+    email: 'demo@wishmaker.app',
+    firstName: 'Demo',
+    lastName: 'User',
     two_factor_enabled: false,
     email_verified: true,
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
 };
 
 // Create dedicated axios instance for auth
 const authApi = axios.create({
     baseURL: API_BASE_URL,
     headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
     },
 });
 
@@ -40,9 +38,9 @@ const authApi = axios.create({
 // Options: 1) HTTPOnly cookies with SameSite=Strict, 2) Secure memory storage
 // 3) IndexedDB with encryption, 4) Service worker for token management
 class TokenManager {
-    private static TOKEN_KEY = "wishmaker_token";
-    private static REFRESH_TOKEN_KEY = "wishmaker_refresh_token";
-    private static USER_KEY = "wishmaker_user";
+    private static TOKEN_KEY = 'wishmaker_token';
+    private static REFRESH_TOKEN_KEY = 'wishmaker_refresh_token';
+    private static USER_KEY = 'wishmaker_user';
 
     static getToken(): string | null {
         return localStorage.getItem(this.TOKEN_KEY);
@@ -82,7 +80,7 @@ class TokenManager {
             // 2) Add buffer time (e.g., refresh 5 minutes before expiry)
             // 3) Validate token structure (header.payload.signature)
             // 4) Add issuer (iss) and audience (aud) validation
-            const payload = JSON.parse(atob(token.split(".")[1]));
+            const payload = JSON.parse(atob(token.split('.')[1]));
             return payload.exp * 1000 < Date.now();
         } catch {
             // TODO: IMPROVEMENT - Log token parsing errors for debugging
@@ -98,7 +96,7 @@ class WebAuthnUtils {
      * Convert base64url to ArrayBuffer
      */
     static base64urlToBuffer(base64url: string): ArrayBuffer {
-        const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
+        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
         const binary = atob(base64);
         const bytes = new Uint8Array(binary.length);
         for (let i = 0; i < binary.length; i++) {
@@ -112,14 +110,14 @@ class WebAuthnUtils {
      */
     static bufferToBase64url(buffer: ArrayBuffer): string {
         const bytes = new Uint8Array(buffer);
-        let binary = "";
+        let binary = '';
         for (let i = 0; i < bytes.byteLength; i++) {
             binary += String.fromCharCode(bytes[i]);
         }
         return btoa(binary)
-            .replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/=/g, "");
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=/g, '');
     }
 
     /**
@@ -135,7 +133,7 @@ class WebAuthnUtils {
                 ...optionsJSON.user,
                 id: this.base64urlToBuffer(optionsJSON.user.id),
             },
-            excludeCredentials: optionsJSON.excludeCredentials?.map((cred) => ({
+            excludeCredentials: optionsJSON.excludeCredentials?.map(cred => ({
                 ...cred,
                 id: this.base64urlToBuffer(cred.id),
             })),
@@ -151,7 +149,7 @@ class WebAuthnUtils {
         return {
             ...optionsJSON,
             challenge: this.base64urlToBuffer(optionsJSON.challenge),
-            allowCredentials: optionsJSON.allowCredentials?.map((cred) => ({
+            allowCredentials: optionsJSON.allowCredentials?.map(cred => ({
                 ...cred,
                 id: this.base64urlToBuffer(cred.id),
             })),
@@ -172,7 +170,7 @@ class WebAuthnUtils {
             clientDataJSON: this.bufferToBase64url(response.clientDataJSON),
         };
 
-        if ("attestationObject" in response) {
+        if ('attestationObject' in response) {
             // Registration response
             responseData.attestationObject = this.bufferToBase64url(
                 response.attestationObject
@@ -197,7 +195,7 @@ class WebAuthnUtils {
             id: credential.id,
             rawId: this.bufferToBase64url(credential.rawId),
             response: responseData,
-            type: credential.type as "public-key",
+            type: credential.type as 'public-key',
             clientExtensionResults: credential.getClientExtensionResults(),
         };
     }
@@ -213,7 +211,7 @@ export class AuthService {
     ): Promise<RegistrationResponse> {
         try {
             const response: AxiosResponse<RegistrationResponse> =
-                await authApi.post("/register", userData);
+                await authApi.post('/register', userData);
 
             if (response.data.success && response.data.user) {
                 TokenManager.setUser(response.data.user);
@@ -222,7 +220,7 @@ export class AuthService {
             return response.data;
         } catch (error: any) {
             throw new Error(
-                error.response?.data?.message || "Registration failed"
+                error.response?.data?.message || 'Registration failed'
             );
         }
     }
@@ -233,7 +231,7 @@ export class AuthService {
     static async login(credentials: LoginRequest): Promise<LoginResponse> {
         try {
             const response: AxiosResponse<LoginResponse> = await authApi.post(
-                "/login",
+                '/login',
                 credentials
             );
 
@@ -255,7 +253,7 @@ export class AuthService {
 
             return data;
         } catch (error: any) {
-            throw new Error(error.response?.data?.message || "Login failed");
+            throw new Error(error.response?.data?.message || 'Login failed');
         }
     }
 
@@ -267,14 +265,14 @@ export class AuthService {
     ): Promise<PublicKeyCredentialCreationOptionsJSON> {
         try {
             const response = await authApi.post(
-                "/register/webauthn/initiate",
+                '/register/webauthn/initiate',
                 request
             );
             return response.data.options;
         } catch (error: any) {
             throw new Error(
                 error.response?.data?.message ||
-                    "WebAuthn registration initiation failed"
+                    'WebAuthn registration initiation failed'
             );
         }
     }
@@ -283,12 +281,12 @@ export class AuthService {
      * Complete WebAuthn registration
      */
     static async completeWebAuthnRegistration(
-        userId: number,
+        userId: string | number,
         credential: PublicKeyCredentialJSON,
         deviceName?: string
     ): Promise<boolean> {
         try {
-            const response = await authApi.post("/register/webauthn/complete", {
+            const response = await authApi.post('/register/webauthn/complete', {
                 userId,
                 credential,
                 deviceName,
@@ -296,7 +294,7 @@ export class AuthService {
             return response.data.success;
         } catch (error: any) {
             throw new Error(
-                error.response?.data?.message || "WebAuthn registration failed"
+                error.response?.data?.message || 'WebAuthn registration failed'
             );
         }
     }
@@ -309,7 +307,7 @@ export class AuthService {
         challenge: string
     ): Promise<AuthSession> {
         try {
-            const response = await authApi.post("/verify/biometric", {
+            const response = await authApi.post('/verify/biometric', {
                 credential,
                 challenge,
             });
@@ -331,10 +329,10 @@ export class AuthService {
                 };
             }
 
-            throw new Error("WebAuthn verification failed");
+            throw new Error('WebAuthn verification failed');
         } catch (error: any) {
             throw new Error(
-                error.response?.data?.message || "WebAuthn verification failed"
+                error.response?.data?.message || 'WebAuthn verification failed'
             );
         }
     }
@@ -349,7 +347,7 @@ export class AuthService {
                 // Optional: notify server of logout
                 await authApi
                     .post(
-                        "/logout",
+                        '/logout',
                         {},
                         {
                             headers: { Authorization: `Bearer ${token}` },
@@ -374,7 +372,7 @@ export class AuthService {
                 return null;
             }
 
-            const response = await authApi.post("/refresh", {
+            const response = await authApi.post('/refresh', {
                 refreshToken,
             });
 
@@ -437,7 +435,7 @@ export class AuthService {
         try {
             const user = TokenManager.getUser();
             if (!user) {
-                throw new Error("User not authenticated");
+                throw new Error('User not authenticated');
             }
 
             // Get registration options
@@ -454,7 +452,7 @@ export class AuthService {
             })) as PublicKeyCredential;
 
             if (!credential) {
-                throw new Error("WebAuthn credential creation failed");
+                throw new Error('WebAuthn credential creation failed');
             }
 
             // Convert to JSON and complete registration
@@ -466,7 +464,7 @@ export class AuthService {
             );
         } catch (error: any) {
             throw new Error(
-                error.message || "WebAuthn credential registration failed"
+                error.message || 'WebAuthn credential registration failed'
             );
         }
     }
@@ -486,14 +484,14 @@ export class AuthService {
             })) as PublicKeyCredential;
 
             if (!credential) {
-                throw new Error("WebAuthn authentication failed");
+                throw new Error('WebAuthn authentication failed');
             }
 
             // Convert to JSON and verify
             const credentialJSON = WebAuthnUtils.credentialToJSON(credential);
             return await this.verifyWebAuthn(credentialJSON, options.challenge);
         } catch (error: any) {
-            throw new Error(error.message || "WebAuthn authentication failed");
+            throw new Error(error.message || 'WebAuthn authentication failed');
         }
     }
 
@@ -521,22 +519,22 @@ export class AuthService {
 
 // Add request interceptor for authentication
 authApi.interceptors.request.use(
-    (config) => {
+    config => {
         const token = TokenManager.getToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
-    (error) => {
+    error => {
         return Promise.reject(error);
     }
 );
 
 // Add response interceptor for token refresh
 authApi.interceptors.response.use(
-    (response) => response,
-    async (error) => {
+    response => response,
+    async error => {
         const originalRequest = error.config;
 
         if (
@@ -554,7 +552,11 @@ authApi.interceptors.response.use(
                 }
             } catch {
                 TokenManager.clearTokens();
-                window.dispatchEvent(new CustomEvent('auth:logout', { detail: { reason: 'token_refresh_failed' } })); // Gracefully handle logout
+                window.dispatchEvent(
+                    new CustomEvent('auth:logout', {
+                        detail: { reason: 'token_refresh_failed' },
+                    })
+                ); // Gracefully handle logout
             }
         }
 

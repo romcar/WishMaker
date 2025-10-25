@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { AuthService } from "../services/auth.service";
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { AuthService } from '../services/auth.service';
 import {
     LoginRequest,
     PublicKeyCredentialRequestOptionsJSON,
-} from "../types/auth.types";
-import "./Login.css";
+} from '../types/auth.types';
+import './Login.css';
 
 // TODO: ENHANCEMENT - Improve Login component functionality
 // 🎫 Linear Ticket: https://linear.app/romcar/issue/ROM-8/implement-complete-authentication-system
@@ -28,8 +28,8 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
     const { login, error, isLoading, clearError } = useAuth();
 
     const [formData, setFormData] = useState<LoginRequest>({
-        email: "",
-        password: "",
+        email: '',
+        password: '',
     });
 
     const [validationErrors, setValidationErrors] = useState<
@@ -75,11 +75,11 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
     // Handle input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData(prev => ({ ...prev, [name]: value }));
 
         // Clear validation error for this field
         if (validationErrors[name as keyof LoginRequest]) {
-            setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
+            setValidationErrors(prev => ({ ...prev, [name]: undefined }));
         }
 
         // Clear auth error
@@ -100,13 +100,13 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
         const errors: Partial<LoginRequest> = {};
 
         if (!formData.email.trim()) {
-            errors.email = "Email is required";
+            errors.email = 'Email is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            errors.email = "Invalid email format";
+            errors.email = 'Invalid email format';
         }
 
         if (!formData.password.trim()) {
-            errors.password = "Password is required";
+            errors.password = 'Password is required';
         }
 
         setValidationErrors(errors);
@@ -133,7 +133,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
             }
         } catch (error) {
             // Error is handled by the context and displayed via the error state
-            console.error("Login error:", error);
+            console.error('Login error:', error);
         }
     };
 
@@ -148,7 +148,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
             // WebAuthn authentication successful
             onSuccess?.();
         } catch (error: any) {
-            console.error("WebAuthn authentication error:", error);
+            console.error('WebAuthn authentication error:', error);
             // Reset to password form on WebAuthn failure
             setShowWebAuthn(false);
             setWebAuthnChallenge(null);
@@ -179,8 +179,8 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
                     disabled={isLoading}
                 >
                     {isLoading
-                        ? "Authenticating..."
-                        : "Authenticate with Biometrics"}
+                        ? 'Authenticating...'
+                        : 'Authenticate with Biometrics'}
                 </button>
 
                 <button
@@ -223,7 +223,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={validationErrors.email ? "error" : ""}
+                    className={validationErrors.email ? 'error' : ''}
                     placeholder="Enter your email"
                     autoComplete="email"
                     disabled={isLoading}
@@ -243,7 +243,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={validationErrors.password ? "error" : ""}
+                    className={validationErrors.password ? 'error' : ''}
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     disabled={isLoading}
@@ -260,7 +260,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
                 className="login-button primary"
                 disabled={isLoading}
             >
-                {isLoading ? "Signing In..." : "Sign In"}
+                {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
 
             {isWebAuthnSupported && isPlatformAuthenticatorAvailable && (
@@ -278,7 +278,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister, onSuccess }) => {
 
             <div className="login-footer">
                 <p>
-                    Don't have an account?{" "}
+                    Don't have an account?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToRegister}

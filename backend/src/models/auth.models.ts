@@ -13,7 +13,7 @@
 // 8. Add backup and recovery procedures
 // 9. Implement data encryption for sensitive fields
 // 10. Add query performance monitoring and optimization
-import pool from "../db/pool";
+import pool from '../db/pool';
 import {
     AuthChallenge,
     AuthSession,
@@ -26,7 +26,7 @@ import {
     UserQueryResult,
     WebAuthnCredential,
     WebAuthnCredentialQueryResult,
-} from "../types/auth.types";
+} from '../types/auth.types';
 
 export class UserModel {
     // TODO: IMPROVEMENT - Enhance UserModel functionality
@@ -71,7 +71,7 @@ export class UserModel {
      * Find user by email
      */
     static async findByEmail(email: string): Promise<User | null> {
-        const query = "SELECT * FROM users WHERE email = $1";
+        const query = 'SELECT * FROM users WHERE email = $1';
         const result = await pool.query<UserQueryResult>(query, [email]);
 
         if (result.rows.length === 0) {
@@ -85,7 +85,7 @@ export class UserModel {
      * Find user by ID
      */
     static async findById(id: number): Promise<User | null> {
-        const query = "SELECT * FROM users WHERE id = $1";
+        const query = 'SELECT * FROM users WHERE id = $1';
         const result = await pool.query<UserQueryResult>(query, [id]);
 
         if (result.rows.length === 0) {
@@ -99,7 +99,7 @@ export class UserModel {
      * Find user by username
      */
     static async findByUsername(username: string): Promise<User | null> {
-        const query = "SELECT * FROM users WHERE username = $1";
+        const query = 'SELECT * FROM users WHERE username = $1';
         const result = await pool.query<UserQueryResult>(query, [username]);
 
         if (result.rows.length === 0) {
@@ -160,7 +160,7 @@ export class UserModel {
      * Verify email address
      */
     static async verifyEmail(userId: number): Promise<void> {
-        const query = "UPDATE users SET email_verified = true WHERE id = $1";
+        const query = 'UPDATE users SET email_verified = true WHERE id = $1';
         await pool.query(query, [userId]);
     }
 
@@ -192,7 +192,7 @@ export class UserModel {
      */
     static async update(
         userId: number,
-        updateData: Partial<Omit<User, "id" | "created_at" | "updated_at">>
+        updateData: Partial<Omit<User, 'id' | 'created_at' | 'updated_at'>>
     ): Promise<User> {
         const fields: string[] = [];
         const values: any[] = [];
@@ -207,12 +207,12 @@ export class UserModel {
         });
 
         if (fields.length === 0) {
-            throw new Error("No fields to update");
+            throw new Error('No fields to update');
         }
 
         const query = `
             UPDATE users
-            SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP
+            SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         `;
@@ -249,7 +249,7 @@ export class WebAuthnCredentialModel {
     static async create(
         credentialData: Omit<
             WebAuthnCredential,
-            "id" | "created_at" | "last_used_at"
+            'id' | 'created_at' | 'last_used_at'
         >
     ): Promise<WebAuthnCredential> {
         const query = `
@@ -290,7 +290,7 @@ export class WebAuthnCredentialModel {
         credentialId: string
     ): Promise<WebAuthnCredential | null> {
         const query =
-            "SELECT * FROM webauthn_credentials WHERE credential_id = $1 AND is_active = true";
+            'SELECT * FROM webauthn_credentials WHERE credential_id = $1 AND is_active = true';
         const result = await pool.query<WebAuthnCredentialQueryResult>(query, [
             credentialId,
         ]);
@@ -315,7 +315,7 @@ export class WebAuthnCredentialModel {
             userId,
         ]);
 
-        return result.rows.map((row) => this.mapCredentialResult(row));
+        return result.rows.map(row => this.mapCredentialResult(row));
     }
 
     /**
@@ -371,7 +371,7 @@ export class AuthSessionModel {
      * Create a new authentication session
      */
     static async create(
-        sessionData: Omit<AuthSession, "id" | "created_at" | "last_activity_at">
+        sessionData: Omit<AuthSession, 'id' | 'created_at' | 'last_activity_at'>
     ): Promise<AuthSession> {
         const query = `
       INSERT INTO auth_sessions (
@@ -470,7 +470,7 @@ export class SecurityEventModel {
      * Create a new security event
      */
     static async create(
-        event: Omit<SecurityEvent, "id" | "created_at">
+        event: Omit<SecurityEvent, 'id' | 'created_at'>
     ): Promise<SecurityEvent> {
         const query = `
             INSERT INTO security_events (user_id, event_type, ip_address, user_agent, metadata)
@@ -494,7 +494,7 @@ export class SecurityEventModel {
      * Log a security event (alias for create for backward compatibility)
      */
     static async log(
-        event: Omit<SecurityEvent, "id" | "created_at">
+        event: Omit<SecurityEvent, 'id' | 'created_at'>
     ): Promise<void> {
         await this.create(event);
     }
@@ -514,7 +514,7 @@ export class SecurityEventModel {
     `;
         const result = await pool.query(query, [userId, limit]);
 
-        return result.rows.map((row) => ({
+        return result.rows.map(row => ({
             ...row,
             metadata: row.metadata ? JSON.parse(row.metadata) : null,
         }));
@@ -526,7 +526,7 @@ export class AuthChallengeModel {
      * Create a new challenge
      */
     static async create(
-        challengeData: Omit<AuthChallenge, "id" | "created_at" | "used">
+        challengeData: Omit<AuthChallenge, 'id' | 'created_at' | 'used'>
     ): Promise<AuthChallenge> {
         const query = `
       INSERT INTO auth_challenges (challenge, user_id, challenge_type, origin, expires_at)
@@ -553,7 +553,7 @@ export class AuthChallengeModel {
         const client = await pool.connect();
 
         try {
-            await client.query("BEGIN");
+            await client.query('BEGIN');
 
             const findQuery = `
         SELECT * FROM auth_challenges
@@ -562,18 +562,18 @@ export class AuthChallengeModel {
             const findResult = await client.query(findQuery, [challenge]);
 
             if (findResult.rows.length === 0) {
-                await client.query("ROLLBACK");
+                await client.query('ROLLBACK');
                 return null;
             }
 
             const updateQuery =
-                "UPDATE auth_challenges SET used = true WHERE challenge = $1";
+                'UPDATE auth_challenges SET used = true WHERE challenge = $1';
             await client.query(updateQuery, [challenge]);
 
-            await client.query("COMMIT");
+            await client.query('COMMIT');
             return findResult.rows[0];
         } catch (error) {
-            await client.query("ROLLBACK");
+            await client.query('ROLLBACK');
             throw error;
         } finally {
             client.release();
@@ -605,7 +605,7 @@ export class AuthChallengeModel {
      * Mark a challenge as used
      */
     static async markUsed(challengeId: number): Promise<void> {
-        const query = "UPDATE auth_challenges SET used = true WHERE id = $1";
+        const query = 'UPDATE auth_challenges SET used = true WHERE id = $1';
         await pool.query(query, [challengeId]);
     }
 
@@ -614,7 +614,7 @@ export class AuthChallengeModel {
      */
     static async cleanupExpired(): Promise<number> {
         const query =
-            "DELETE FROM auth_challenges WHERE expires_at < CURRENT_TIMESTAMP";
+            'DELETE FROM auth_challenges WHERE expires_at < CURRENT_TIMESTAMP';
         const result = await pool.query(query);
         return result.rowCount || 0;
     }
@@ -629,7 +629,7 @@ export class TwoFactorBackupModel {
         data: Partial<
             Omit<
                 TwoFactorBackup,
-                "id" | "user_id" | "created_at" | "updated_at"
+                'id' | 'user_id' | 'created_at' | 'updated_at'
             >
         >
     ): Promise<TwoFactorBackup> {
@@ -659,7 +659,7 @@ export class TwoFactorBackupModel {
      * Find two-factor backup data for a user
      */
     static async findByUserId(userId: number): Promise<TwoFactorBackup | null> {
-        const query = "SELECT * FROM two_factor_backup WHERE user_id = $1";
+        const query = 'SELECT * FROM two_factor_backup WHERE user_id = $1';
         const result = await pool.query(query, [userId]);
 
         if (result.rows.length === 0) {
@@ -689,7 +689,7 @@ export class TwoFactorBackupModel {
      * Delete two-factor backup data for a user
      */
     static async delete(userId: number): Promise<void> {
-        const query = "DELETE FROM two_factor_backup WHERE user_id = $1";
+        const query = 'DELETE FROM two_factor_backup WHERE user_id = $1';
         await pool.query(query, [userId]);
     }
 }
@@ -713,7 +713,7 @@ export class UserPreferencesModel {
      * Find preferences for a user
      */
     static async findByUserId(userId: number): Promise<UserPreferences | null> {
-        const query = "SELECT * FROM user_preferences WHERE user_id = $1";
+        const query = 'SELECT * FROM user_preferences WHERE user_id = $1';
         const result = await pool.query(query, [userId]);
 
         if (result.rows.length === 0) {
@@ -731,7 +731,7 @@ export class UserPreferencesModel {
         preferences: Partial<
             Omit<
                 UserPreferences,
-                "id" | "user_id" | "created_at" | "updated_at"
+                'id' | 'user_id' | 'created_at' | 'updated_at'
             >
         >
     ): Promise<UserPreferences> {
@@ -748,12 +748,12 @@ export class UserPreferencesModel {
         });
 
         if (fields.length === 0) {
-            throw new Error("No fields to update");
+            throw new Error('No fields to update');
         }
 
         const query = `
       UPDATE user_preferences
-      SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP
+      SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP
       WHERE user_id = $1
       RETURNING *
     `;
