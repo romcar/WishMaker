@@ -1,5 +1,5 @@
 // TODO: ENHANCEMENT - Expand Wish model with missing features
-// 1. ✅ Added user_id field for multi-user support (Supabase integration)
+// 1. ✅ Added user_id field for multi-user support
 // 2. Add priority field (low, medium, high, urgent)
 // 3. Add category/tags for organization (array of strings)
 // 4. Add target_date for deadline tracking
@@ -16,7 +16,7 @@ export interface Wish {
     created_at: string;
     updated_at: string;
     status: 'pending' | 'fulfilled' | 'cancelled';
-    user_id: string; // Added for Supabase multi-user support
+    user_id: string; // Added for multi-user support
 }
 
 export interface CreateWishInput {

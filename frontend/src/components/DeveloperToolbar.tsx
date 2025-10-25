@@ -21,7 +21,6 @@ interface EnvironmentInfo {
     viewport: string;
     url: string;
     isGitHubPages?: boolean;
-    isSupabaseActive?: boolean;
 }
 
 const DevEnvInfoItem: React.FC<{ label: string; value: string }> = ({
@@ -49,10 +48,6 @@ const DeveloperToolbar: React.FC = () => {
         isGitHubPages: !!(
             process.env.REACT_APP_GITHUB_PAGES === 'true' ||
             window.location.hostname.endsWith('github.io')
-        ),
-        isSupabaseActive: !!(
-            process.env.REACT_APP_SUPABASE_URL &&
-            process.env.REACT_APP_SUPABASE_ANON_KEY
         ),
     });
 

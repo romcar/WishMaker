@@ -1,15 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import SupabaseApp from './SupabaseApp';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-
-// Determine which app version to use based on environment
-const useSupabase = !!(
-    process.env.REACT_APP_SUPABASE_URL &&
-    process.env.REACT_APP_SUPABASE_ANON_KEY
-);
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -17,7 +10,7 @@ const root = ReactDOM.createRoot(
 
 root.render(
     <React.StrictMode>
-        {useSupabase ? <SupabaseApp /> : <App />}
+        <App />
     </React.StrictMode>
 );
 

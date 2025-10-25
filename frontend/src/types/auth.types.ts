@@ -8,9 +8,9 @@
 // 6. Add user preference settings (theme, notifications, etc.)
 // 7. Add privacy settings and data sharing preferences
 // 8. Add account verification and compliance fields
-// Authentication types for the frontend (Supabase compatible)
+// Authentication types for the frontend
 export interface User {
-    id: string; // Supabase uses UUID strings
+    id: string; // User identifier
     email: string;
     firstName: string;
     lastName: string;
@@ -21,7 +21,7 @@ export interface User {
     avatar_url?: string;
 }
 
-// Supabase Profile interface (separate from User for database storage)
+// Profile interface (separate from User for database storage)
 export interface Profile {
     id: string;
     email: string;
@@ -145,7 +145,7 @@ export type AuthenticatorTransport =
     | 'usb';
 
 export interface WebAuthnRegistrationRequest {
-    userId: string | number; // Support both string (Supabase) and number (legacy backend)
+    userId: string | number; // Support both string and number backend types
     deviceName?: string;
 }
 

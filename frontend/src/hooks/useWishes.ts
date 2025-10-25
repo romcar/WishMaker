@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '../contexts/SupabaseAuthContext';
+import { useAuth } from '../contexts/AuthContext';
+import { wishAPI } from '../services/api';
 import { isGitHubPages } from '../services/mock-api';
-import { WishAPIService } from '../services/wish-api.service';
 import { CreateWishInput, UpdateWishInput, Wish } from '../types/wish.types';
 
 export function useWishes() {
@@ -21,7 +21,7 @@ export function useWishes() {
         try {
             setLoading(true);
             setError(null);
-            const wishesData = await WishAPIService.getWishes();
+            const wishesData = await wishAPI.getAllWishes();
             setWishes(wishesData);
         } catch (err) {
             const message =
@@ -38,88 +38,17 @@ export function useWishes() {
         fetchWishes();
     }, [fetchWishes]);
 
-    // Set up real-time subscription (only for Supabase)
-    useEffect(() => {
-        if (!user || isGitHubPages) {
-            return;
-        }
-
-        let subscription: any = null;
-
-        const setupSubscription = async () => {
-            subscription = WishAPIService.subscribeToWishChanges(
-                user.id,
-                payload => {
-                    console.log('Real-time wish change:', payload);
-
-                    const {
-                        eventType,
-                        new: newRecord,
-                        old: oldRecord,
-                    } = payload;
-
-                    setWishes(currentWishes => {
-                        switch (eventType) {
-                            case 'INSERT':
-                                // Add new wish if it doesn't exist
-                                if (
-                                    newRecord &&
-                                    !currentWishes.find(
-                                        w => w.id === newRecord.id
-                                    )
-                                ) {
-                                    return [newRecord, ...currentWishes];
-                                }
-                                return currentWishes;
-
-                            case 'UPDATE':
-                                // Update existing wish
-                                if (newRecord) {
-                                    return currentWishes.map(wish =>
-                                        wish.id === newRecord.id
-                                            ? newRecord
-                                            : wish
-                                    );
-                                }
-                                return currentWishes;
-
-                            case 'DELETE':
-                                // Remove deleted wish
-                                if (oldRecord) {
-                                    return currentWishes.filter(
-                                        wish => wish.id !== oldRecord.id
-                                    );
-                                }
-                                return currentWishes;
-
-                            default:
-                                return currentWishes;
-                        }
-                    });
-                }
-            );
-        };
-
-        setupSubscription();
-
-        return () => {
-            if (subscription) {
-                WishAPIService.unsubscribeFromWishChanges(subscription);
-            }
-        };
-    }, [user]);
+    // Note: Real-time updates removed - using backend API only
 
     // Create a new wish
     const createWish = useCallback(
         async (wishData: CreateWishInput): Promise<Wish> => {
             try {
                 setError(null);
-                const newWish = await WishAPIService.createWish(wishData);
+                const newWish = await wishAPI.createWish(wishData);
 
-                // Optimistically update the UI for GitHub Pages (no real-time updates)
-                if (isGitHubPages) {
-                    setWishes(current => [newWish, ...current]);
-                }
+                // Update the UI (no real-time updates with backend API)
+                setWishes(current => [newWish, ...current]);
 
                 return newWish;
             } catch (err) {
@@ -139,12 +68,14 @@ export function useWishes() {
         async (id: number, updates: UpdateWishInput): Promise<Wish> => {
             try {
                 setError(null);
-                const updatedWish = await WishAPIService.updateWish(
-                    id,
-                    updates
+                const updatedWish = await wishAPI.updateWish(id, updates);
+
+                // Update the UI
+                setWishes(current =>
+                    current.map(wish => (wish.id === id ? updatedWish : wish))
                 );
 
-                // Optimistically update the UI for GitHub Pages
+                // Also update for GitHub Pages
                 if (isGitHubPages) {
                     setWishes(current =>
                         current.map(wish =>
@@ -170,12 +101,10 @@ export function useWishes() {
     const deleteWish = useCallback(async (id: number): Promise<void> => {
         try {
             setError(null);
-            await WishAPIService.deleteWish(id);
+            await wishAPI.deleteWish(id);
 
-            // Optimistically update the UI for GitHub Pages
-            if (isGitHubPages) {
-                setWishes(current => current.filter(wish => wish.id !== id));
-            }
+            // Update the UI
+            setWishes(current => current.filter(wish => wish.id !== id));
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : 'Failed to delete wish';
