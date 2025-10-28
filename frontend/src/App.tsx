@@ -6,7 +6,14 @@
 // 4. ErrorBoundary for global error handling
 // 5. NotificationProvider for user feedback
 // 6. Router setup for multiple pages/views
-import { useEffect, useState } from 'react';
+import {
+    StackHandler,
+    StackProvider,
+    StackTheme,
+    useUser,
+} from '@stackframe/react';
+import { Suspense, useState } from 'react';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import DemoBanner from './components/DemoBanner';
 import DeveloperToolbar from './components/DeveloperToolbar';
@@ -15,9 +22,22 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Register from './components/Register';
 import WishForm from './components/WishForm';
 import WishList from './components/WishList';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { wishAPI } from './services/api';
-import { CreateWishInput, Wish } from './types/wish.types';
+import { useAuth } from './contexts/AuthContext';
+import { useNeonWishes } from './hooks/useNeonWishes';
+import { stackClientApp } from './stack';
+import { CreateWishInput } from './types/wish.types';
+
+function HandleRoutes() {
+    const location = useLocation();
+
+    return (
+        <StackHandler
+            app={stackClientApp}
+            location={location.pathname}
+            fullPage
+        />
+    );
+}
 
 // Authentication Modal Component
 interface AuthModalProps {
@@ -130,80 +150,43 @@ const UserMenu: React.FC = () => {
 
 // Main App Content Component
 function AppContent() {
-    const { isAuthenticated } = useAuth();
-    const [wishes, setWishes] = useState<Wish[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const user = useUser();
+    const {
+        wishes,
+        loading,
+        error,
+        createWish: neonCreateWish,
+        deleteWish: neonDeleteWish,
+        updateWishStatus: neonUpdateWishStatus,
+    } = useNeonWishes();
     const [authModalOpen, setAuthModalOpen] = useState(false);
 
-    // Fetch wishes when authenticated
-    useEffect(() => {
-        if (isAuthenticated) {
-            fetchWishes();
-        } else {
-            setWishes([]);
-            setError(null);
-        }
-    }, [isAuthenticated]);
-
-    // Listen for auth logout events (from token refresh failures)
-    useEffect(() => {
-        const handleAuthLogout = () => {
-            setWishes([]);
-            setError(null);
-        };
-
-        window.addEventListener('auth:logout', handleAuthLogout);
-        return () =>
-            window.removeEventListener('auth:logout', handleAuthLogout);
-    }, []);
-
-    const fetchWishes = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await wishAPI.getAllWishes();
-            setWishes(data);
-        } catch (err: any) {
-            setError(err.message || 'Failed to fetch wishes');
-            console.error('Error fetching wishes:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const isAuthenticated = !!user;
 
     const handleCreateWish = async (wish: CreateWishInput) => {
         try {
-            const newWish = await wishAPI.createWish(wish);
-            setWishes([newWish, ...wishes]);
+            await neonCreateWish(wish);
         } catch (err: any) {
-            setError(err.message || 'Failed to create wish');
             console.error('Error creating wish:', err);
         }
     };
 
-    const handleDeleteWish = async (id: number) => {
+    const handleDeleteWish = async (id: string) => {
         try {
-            await wishAPI.deleteWish(id);
-            setWishes(wishes.filter(wish => wish.id !== id));
+            await neonDeleteWish(id);
         } catch (err: any) {
-            setError(err.message || 'Failed to delete wish');
             console.error('Error deleting wish:', err);
         }
     };
 
     const handleStatusChange = async (
-        id: number,
+        id: string,
         status: 'pending' | 'fulfilled' | 'cancelled'
     ) => {
         try {
-            const updatedWish = await wishAPI.updateWish(id, { status });
-            setWishes(
-                wishes.map(wish => (wish.id === id ? updatedWish : wish))
-            );
+            await neonUpdateWishStatus(id, status);
         } catch (err: any) {
-            setError(err.message || 'Failed to update wish status');
-            console.error('Error updating wish:', err);
+            console.error('Error updating wish status:', err);
         }
     };
 
@@ -315,12 +298,26 @@ function AppContent() {
     );
 }
 
+const Fallback = () => <div className="loading">Loading application...</div>;
+
 // Main App Component wrapped with AuthProvider
 function App() {
     return (
-        <AuthProvider>
-            <AppContent />
-        </AuthProvider>
+        <Suspense fallback={<Fallback />}>
+            <BrowserRouter>
+                <StackProvider app={stackClientApp}>
+                    <StackTheme>
+                        <Routes>
+                            <Route
+                                path="/handler/*"
+                                element={<HandleRoutes />}
+                            />
+                            <Route path="/*" element={<AppContent />} />
+                        </Routes>
+                    </StackTheme>
+                </StackProvider>
+            </BrowserRouter>
+        </Suspense>
     );
 }
 

@@ -10,23 +10,17 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install dotenvx globally via npm (more reliable than shell script)
+RUN npm install -g @dotenvx/dotenvx
+
+# Copy environment files first
+COPY .env.* ./
+
 # Copy the rest of the application code
 COPY . .
 
-# Accept build arguments for Vite environment variables
-ARG VITE_API_URL
-ARG VITE_SITE_URL
-ARG VITE_GITHUB_PAGES
-ARG VITE_DEMO_MODE
-
-# Set environment variables for the build
-ENV VITE_API_URL=$VITE_API_URL
-ENV VITE_SITE_URL=$VITE_SITE_URL
-ENV VITE_GITHUB_PAGES=$VITE_GITHUB_PAGES
-ENV VITE_DEMO_MODE=$VITE_DEMO_MODE
-
-# Build the React application
-RUN npm run build
+# Load environment variables and build the React application
+RUN export $(dotenvx run --env-file=.env.development -- printenv | grep ^VITE_ | xargs) && npm run build
 
 # Install serve to run the production build
 RUN npm install -g serve
@@ -35,4 +29,4 @@ RUN npm install -g serve
 EXPOSE 3000
 
 # Define the command to run the application
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["dotenvx", "run", "--env-file=.env.development", "--", "serve", "-s", "build", "-l", "3000"]

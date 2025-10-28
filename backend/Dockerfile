@@ -7,11 +7,16 @@ RUN apk add --no-cache python3 make g++
 # Set the working directory inside the container
 WORKDIR /app
 
+ENV NODE_ENV=production
+
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
-# Install dependencies and rebuild native modules
-RUN npm ci && npm rebuild bcrypt
+# Install dependencies including dev dependencies for build
+RUN npm ci --include=dev && npm rebuild bcrypt
+
+# Install dotenvx globally via npm (more reliable than shell script)
+RUN npm install -g @dotenvx/dotenvx
 
 # Copy the rest of the application code (excluding node_modules)
 COPY src ./src
@@ -21,7 +26,8 @@ COPY tsconfig.json ./
 RUN npm run build
 
 # Expose the port the app runs on
+EXPOSE $PORT
 EXPOSE 8000
 
 # Define the command to run the application
-CMD ["npm", "start"]
+CMD ["dotenvx", "run", "--", "npm", "start"]

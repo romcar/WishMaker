@@ -10,18 +10,20 @@
 // 9. Add location field for location-based wishes
 // 10. Add sharing capabilities (share_token, shared_with array)
 export interface Wish {
-    id: number;
+    id: string;
+    userId: string;
     title: string;
     description: string | null;
-    created_at: string;
-    updated_at: string;
     status: 'pending' | 'fulfilled' | 'cancelled';
-    user_id: string; // Added for multi-user support
+    priority: number | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
 }
 
 export interface CreateWishInput {
     title: string;
-    description: string | null;
+    description?: string | null;
+    priority?: number;
 }
 
 export interface UpdateWishInput {

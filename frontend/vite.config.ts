@@ -1,8 +1,8 @@
 /// <reference types="vitest" />
 import react from '@vitejs/plugin-react';
-import path from 'path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import path from 'path';
 import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
@@ -22,6 +22,9 @@ export default defineConfig({
         sourcemap: true,
         // Increase chunk size warning limit for large dependencies
         chunkSizeWarningLimit: 1000,
+        rollupOptions: {
+            external: ['drizzle.config.ts'],
+        },
     },
 
     // Configure path resolution

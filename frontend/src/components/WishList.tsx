@@ -13,9 +13,9 @@ import { Wish } from '../types/wish.types';
 // 8. Advanced filtering (date ranges, custom tags)
 interface WishListProps {
     wishes: Wish[];
-    onDelete: (id: number) => void;
+    onDelete: (id: string) => void;
     onStatusChange: (
-        id: number,
+        id: string,
         status: 'pending' | 'fulfilled' | 'cancelled'
     ) => void;
 }
